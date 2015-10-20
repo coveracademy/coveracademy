@@ -1,0 +1,21 @@
+'use strict';
+
+var models          = require('../models'),
+    settings        = require('../configs/settings'),
+    logger          = require('../configs/logger'),
+    pagination      = require('../utils/pagination'),
+    entities        = require('../utils/entities'),
+    userService     = require('./userService'),
+    notifier        = require('./internal/notifier'),
+    postman         = require('./internal/postman'),
+    messages        = require('./internal/messages'),
+    constants       = require('./internal/constants'),
+    shortid         = require('shortid'),
+    Promise         = require('bluebird'),
+    moment          = require('moment').utc,
+    _               = require('lodash'),
+    ValidationError = require('bookshelf-filteration').ValidationError,
+    User            = models.User,
+    Contest         = models.Contest,
+    Bookshelf       = models.Bookshelf,
+    $               = this;

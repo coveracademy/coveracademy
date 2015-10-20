@@ -1,0 +1,215 @@
+{
+  "oneUser": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999999", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ]
+  },
+  "anotherUser": {
+    "user": [
+      {"id": 10, "first_name": "Maday", "last_name": "Avila", "phone": "+557188886666", "email": "maday@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ]
+  },
+  "circleWithOneUser": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999999", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ],
+    "circle": [
+      {"id": 1, "creator_id": 1, "name": "Family", "location_mode": "anytime"}
+    ],
+    "member": [
+      {"id": 1, "user_id": 1, "circle_id": 1, "location_mode": "anytime", "permission": "owner"}
+    ]
+  },
+  "circleWithLocationModePlacesOnlyAndOneUser": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999999", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ],
+    "circle": [
+      {"id": 1, "creator_id": 1, "name": "Family", "location_mode": "places_only"}
+    ],
+    "member": [
+      {"id": 1, "user_id": 1, "circle_id": 1, "location_mode": "places_only", "permission": "owner"}
+    ]
+  },
+  "circleWithTwoUsers": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999999", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 2, "first_name": "Wesley", "last_name": "Mascarenhas", "phone": "+557188888888", "email": "wesley@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ],
+    "circle": [
+      {"id": 1, "creator_id": 1, "name": "Family", "location_mode": "anytime"}
+    ],
+    "member": [
+      {"id": 1, "user_id": 1, "circle_id": 1, "location_mode": "anytime", "permission": "owner"},
+      {"id": 2, "user_id": 2, "circle_id": 1, "location_mode": "anytime", "permission": "user"}
+    ]
+  },
+  "circleWithThreeUsers": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999991", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 2, "first_name": "Wesley", "last_name": "Mascarenhas", "phone": "+557199999992", "email": "wesley@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 3, "first_name": "Joana", "last_name": "Prado", "phone": "+557199999994", "email": "joana@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ],
+    "circle": [
+      {"id": 1, "creator_id": 1, "name": "Family", "location_mode": "anytime"}
+    ],
+    "member": [
+      {"id": 1, "user_id": 1, "circle_id": 1, "location_mode": "anytime", "permission": "owner"},
+      {"id": 2, "user_id": 2, "circle_id": 1, "location_mode": "anytime", "permission": "admin"},
+      {"id": 3, "user_id": 3, "circle_id": 1, "location_mode": "anytime", "permission": "user"}
+    ]
+  },
+  "threeCirclesAndThreeInvitations": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999991", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 2, "first_name": "Wesley", "last_name": "Mascarenhas", "phone": "+557199999992", "email": "wesley@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 3, "first_name": "Maria", "last_name": "Silva", "phone": "+557199999993", "email": "maria@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 4, "first_name": "Joana", "last_name": "Prado", "phone": "+557199999994", "email": "joana@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ],
+    "circle": [
+      {"id": 1, "creator_id": 1, "name": "Family1", "location_mode": "anytime"},
+      {"id": 2, "creator_id": 2, "name": "Family2", "location_mode": "anytime"},
+      {"id": 3, "creator_id": 3, "name": "Family3", "location_mode": "anytime"}
+    ],
+    "member": [
+      {"id": 1, "user_id": 1, "circle_id": 1, "location_mode": "anytime", "permission": "owner"},
+      {"id": 2, "user_id": 2, "circle_id": 2, "location_mode": "anytime", "permission": "owner"},
+      {"id": 3, "user_id": 3, "circle_id": 3, "location_mode": "anytime", "permission": "owner"}
+    ],
+    "invitation": [
+      {"id": "1", "circle_id": 1, "user_id": 1, "guest_name": "Maday Avila", "registration_date": "2015-04-01 04:52:59"},
+      {"id": "3", "circle_id": 2, "user_id": 2, "guest_name": "Joana Silva", "guest_id": 4, "registration_date": "2015-04-02 04:52:59"},
+      {"id": "4", "circle_id": 3, "user_id": 3, "guest_name": "Joana Silva", "guest_id": 4, "registration_date": "2015-04-01 04:52:59"}
+    ]
+  },
+  "invitationsByEmailOrPhone": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999991", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 2, "first_name": "Wesley", "last_name": "Mascarenhas", "phone": "+557199999992", "email": "wesley@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ],
+    "circle": [
+      {"id": 1, "creator_id": 1, "name": "Family", "location_mode": "anytime"},
+      {"id": 2, "creator_id": 1, "name": "Work", "location_mode": "anytime"}
+    ],
+    "member": [
+      {"id": 1, "user_id": 1, "circle_id": 1, "location_mode": "anytime", "permission": "owner"},
+      {"id": 2, "user_id": 1, "circle_id": 2, "location_mode": "anytime", "permission": "owner"}
+    ],
+    "invitation": [
+      {"id": "1", "circle_id": 1, "user_id": 1, "guest_name": "Wesley Mascarenhas", "registration_date": "2015-04-01 04:52:59"},
+      {"id": "2", "circle_id": 2, "user_id": 1, "guest_name": "Wesley", "registration_date": "2015-04-02 04:52:59"}
+    ],
+    "guest_information": [
+      {"id": 1, "invitation_id": "1", "type": "email", "value": "wesley@email.com"},
+      {"id": 2, "invitation_id": "2", "type": "phone", "value": "+557199999992"}
+    ]
+  },
+  "circleWithOneUserAndOneInvitation": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999991", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 2, "first_name": "Wesley", "last_name": "Mascarenhas", "phone": "+557199999992", "email": "wesley@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ],
+    "circle": [
+      {"id": 1, "creator_id": 1, "name": "Family1", "location_mode": "anytime"}
+    ],
+    "member": [
+      {"id": 1, "user_id": 1, "circle_id": 1, "location_mode": "anytime", "permission": "owner"}
+    ],
+    "invitation": [
+      {"id": "1", "circle_id": 1, "user_id": 1, "guest_id": 2, "registration_date": "2015-04-01 04:52:59"}
+    ]
+  },
+  "onePlaceInCircle": {
+    "place": [
+      {"id": 1, "type": "place", "name": "Home", "creator_id": 1, "circle_id": 1, "latitude": -12.973325, "longitude": -38.481951, "radius": 300}
+    ]
+  },
+  "oneEventInCircle": {
+    "place": [
+      {"id": 2, "type": "event", "name": "Home Party", "creator_id": 1, "circle_id": 1, "latitude": -12.973325, "longitude": -38.481951, "radius": 300, "recurring_event": 0, "start_date": "2015-04-04 19:00:00", "end_date": "2015-04-04 21:00:00"}
+    ]
+  },
+  "onePlace": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999999", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 2, "first_name": "Wesley", "last_name": "Mascarenhas", "phone": "+557199999977", "email": "wesley@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 3, "first_name": "Maday", "last_name": "Avila", "phone": "+557199999966", "email": "maday@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ],
+    "circle": [
+      {"id": 1, "creator_id": 1, "name": "Family", "location_mode": "anytime"}
+    ],
+    "member": [
+      {"id": 1, "user_id": 1, "circle_id": 1, "location_mode": "anytime", "permission": "owner"},
+      {"id": 2, "user_id": 2, "circle_id": 1, "location_mode": "anytime", "permission": "admin"},
+      {"id": 3, "user_id": 3, "circle_id": 1, "location_mode": "anytime", "permission": "user"}
+    ],
+    "place": [
+      {"id": 1, "type": "place", "name": "Home", "creator_id": 1, "circle_id": 1, "latitude": -12.973325, "longitude": -38.481951, "radius": 300}
+    ]
+  },
+  "oneEvent": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999999", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ],
+    "circle": [
+      {"id": 1, "creator_id": 1, "name": "Family", "location_mode": "anytime"}
+    ],
+    "member": [
+      {"id": 1, "user_id": 1, "circle_id": 1, "location_mode": "anytime", "permission": "owner"}
+    ],
+    "place": [
+      {"id": 1, "type": "event", "name": "Home", "creator_id": 1, "circle_id": 1, "latitude": -12.973325, "longitude": -38.481951, "radius": 300, "recurring_event": 0, "start_date": "2015-04-14 13:00:00", "start_date": "2015-04-15 13:00:00"}
+    ]
+  },
+  "twoPlaces": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999999", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ],
+    "circle": [
+      {"id": 1, "creator_id": 1, "name": "Family", "location_mode": "anytime"}
+    ],
+    "member": [
+      {"id": 1, "user_id": 1, "circle_id": 1, "location_mode": "anytime", "permission": "owner"}
+    ],
+    "place": [
+      {"id": 1, "type": "place", "name": "Home", "creator_id": 1, "circle_id": 1, "latitude": -12.973325, "longitude": -38.481951, "radius": 300},
+      {"id": 2, "type": "event", "name": "Party", "creator_id": 1, "circle_id": 1, "latitude": -12.983211, "longitude": -38.492131, "radius": 15.40, "recurring_event": 0, "start_date": "2015-04-14 13:00:00", "end_date": "2015-04-15 13:00:00"}
+    ]
+  },
+  "circleToRemove": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999991", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 2, "first_name": "Wesley", "last_name": "Mascarenhas", "phone": "+557199999992", "email": "wesley@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 3, "first_name": "Felipe", "last_name": "Simas", "phone": "+557199999993", "email": "felipe@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 4, "first_name": "Maday", "last_name": "Avila", "phone": "+557199999994", "email": "maday@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 5, "first_name": "Sandra", "last_name": "Simas", "phone": "+557199999995", "email": "sandra@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ],
+    "circle": [
+      {"id": 1, "creator_id": 1, "name": "Family", "location_mode": "anytime"}
+    ],
+    "member": [
+      {"id": 1, "user_id": 1, "circle_id": 1, "location_mode": "anytime", "permission": "owner"},
+      {"id": 2, "user_id": 2, "circle_id": 1, "location_mode": "anytime", "permission": "admin"},
+      {"id": 3, "user_id": 3, "circle_id": 1, "location_mode": "anytime", "permission": "user"}
+    ],
+    "place": [
+      {"id": 1, "type": "place", "name": "Ericsson Inovação", "creator_id": 1, "circle_id": 1, "latitude": -12.973325, "longitude": -38.481951, "radius": 300},
+      {"id": 2, "type": "place", "name": "Pituaçu", "creator_id": 1, "circle_id": 1, "latitude": -12.973325, "longitude": -38.481951, "radius": 300}
+    ],
+    "invitation": [
+      {"id": "1", "circle_id": 1, "user_id": 1, "guest_name": "Maday Avila", "registration_date": "2015-04-01 04:52:59"},
+      {"id": "2", "circle_id": 1, "user_id": 1, "guest_name": "Sandra Simas", "registration_date": "2015-04-02 04:52:59"}
+    ],
+    "guest_information": [
+      {"id": 1, "invitation_id": "1", "type": "email", "value": "maday@email.com"},
+      {"id": 2, "invitation_id": "2", "type": "email", "value": "sandra@email.com"}
+    ],
+    "user_activity": [
+      {"id": 1, "circle_id": 1, "user_id": 1, "type": "circle_created", "parameters": "", "particular": 0}
+    ],
+    "user_notification": [
+      {"id": 1, "related_id": 1, "activity_id": 1, "viewed": 0},
+      {"id": 2, "related_id": 2, "activity_id": 1, "viewed": 0}
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "oneInvitation": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999999", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ],
+    "circle": [
+      {"id": 1, "creator_id": 1, "name": "Family1", "location_mode": "anytime"}
+    ],
+    "member": [
+      {"id": 1, "user_id": 1, "circle_id": 1, "location_mode": "anytime", "permission": "owner"}
+    ],
+    "invitation": [
+      {"id": "EzaWqdf", "circle_id": 1, "user_id": 1, "guest_name": "Wesley Mascarenhas", "registration_date": "2015-04-01 04:52:59"}
+    ]
+  },
+  "authenticate": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999999", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ]
+  },
+  "oneUser": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999999", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ]
+  },
+  "fourUsersAndCircleWithOneUserAndOneInvitation": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999991", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 2, "first_name": "Wesley", "last_name": "Mascarenhas", "phone": "+557199999992", "email": "wesley@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 3, "first_name": "Maria", "last_name": "Silva", "phone": "+557199999993", "email": "maria@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 4, "first_name": "Joana", "last_name": "Silva", "phone": "+557199999994", "email": "joana@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ],
+    "circle": [
+      {"id": 1, "creator_id": 1, "name": "Family1", "location_mode": "anytime"}
+    ],
+    "member": [
+      {"id": 1, "user_id": 1, "circle_id": 1, "location_mode": "anytime", "permission": "owner"}
+    ],
+    "invitation": [
+      {"id": 1, "circle_id": 1, "user_id": 1, "email": "wesley@gmail.com", "guest_id": 2, "registration_date": "2015-04-01 04:52:59"}
+    ]
+  },
+  "fourUsers": {
+    "user": [
+      {"id": 1, "first_name": "Sandro", "last_name": "Simas", "phone": "+557199999991", "email": "sandro@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 2, "first_name": "Wesley", "last_name": "Mascarenhas", "phone": "+557199999992", "email": "wesley@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 3, "first_name": "Maria", "last_name": "Silva", "phone": "+557199999993", "email": "maria@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"},
+      {"id": 4, "first_name": "Joana", "last_name": "Silva", "phone": "+557199999994", "email": "joana@email.com", "language": "pt", "password": "$2a$10$e7kTlnUSZAXsNlwKOans3.3CEdFgZkkPB8uChMe3iWK1lYusWbwtq"}
+    ]
+  }
+}
