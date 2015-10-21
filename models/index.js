@@ -31,7 +31,7 @@ var User = Bookshelf.Model.extend({
     return this.hasMany(User).through(UserFan, 'fan_id');
   },
   validations: {
-    name: {notBlank: true, length: {minimum: 3}},
+    name: {presence: true, length: {minimum: 3}},
     email: {notBlank: true, email: true},
     username: {notBlank: true, format: /^[a-z0-9.]{5,20}$/}
   },

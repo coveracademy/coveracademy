@@ -15,6 +15,11 @@ var models          = require('../models'),
     _               = require('lodash'),
     ValidationError = require('bookshelf-filteration').ValidationError,
     NotFoundError   = models.Bookshelf.NotFoundError,
-    Contest         = models.Contest,
     User            = models.User,
     $               = this;
+
+exports.listUsers = function(ids) {
+  return User.collection().query(function(qb) {
+    qb.whereIn('id', ids);
+  }).fetch();
+}

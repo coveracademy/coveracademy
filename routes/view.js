@@ -12,6 +12,23 @@ var contestService  = require('../apis/contestService'),
 
 module.exports = function(router, app) {
 
+  router.get('/auditions', function(req, res, next) {
+    contestService.listRunningContests().bind({}).then(function(contests) {
+      this.contests = contests;
+      return contestService.listAuditions(contests);
+    }).then(function(auditions) {
+      this.auditions = auditions;
+      var usersIds = auditions.pluck('user_id');
+      return userService.listUsers(usersIds);
+    }).then(function(users) {
+      this.users = users;
+      res.json(this);
+    }).catch(function(err) {
+      logger.error(err);
+      messages.respondWithError(err, res);
+    });
+  });
+
   app.use('/views', router);
 
 };
