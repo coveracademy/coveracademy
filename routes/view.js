@@ -15,13 +15,18 @@ module.exports = function(router, app) {
   router.get('/auditions', function(req, res, next) {
     contestService.listRunningContests().bind({}).then(function(contests) {
       this.contests = contests;
-      return contestService.listAuditions(contests);
+      return contestService.listAuditions(this.contests);
     }).then(function(auditions) {
       this.auditions = auditions;
-      var usersIds = auditions.pluck('user_id');
-      return userService.listUsers(usersIds);
-    }).then(function(users) {
-      this.users = users;
+      return Promise.props({
+        total_votes: contestService.totalVotes(this.auditions), 
+        total_comments: contestService.totalComments(this.auditions),
+        users: userService.listUsers(this.auditions.pluck('user_id'))
+      });
+    }).then(function(result) {
+      this.total_votes = result.total_votes;
+      this.total_comments = result.total_comments;
+      this.users = result.users;
       res.json(this);
     }).catch(function(err) {
       logger.error(err);

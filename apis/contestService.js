@@ -16,6 +16,8 @@ var models          = require('../models'),
     _               = require('lodash'),
     ValidationError = require('bookshelf-filteration').ValidationError,
     User            = models.User,
+    UserVote        = models.UserVote,
+    UserComment     = models.UserComment,
     Contest         = models.Contest,
     Audition        = models.Audition,
     Bookshelf       = models.Bookshelf,
@@ -33,4 +35,50 @@ exports.listAuditions = function(contests) {
   return Audition.collection().query(function(qb) {
     qb.whereIn('contest_id', contests.pluck('id'));
   }).fetch();
+};
+
+exports.totalVotes = function(auditions) {
+  return new Promise(function(resolve, reject) {
+    if(auditions.isEmpty()) {
+      resolve({});
+    } else {
+      Bookshelf.knex(UserVote.forge().tableName)
+      .select('audition_id')
+      .count('id as votes')
+      .whereIn('audition_id', auditions.pluck('id'))
+      .groupBy('audition_id')
+      .then(function(votesCounts) {
+        var votesByAudition = {};
+        votesCounts.forEach(function(votesCount) {
+          votesByAudition[votesCount.audition_id] = votesCount.votes;
+        });
+        resolve(votesByAudition);
+      }).catch(function(err) {
+        reject(err);
+      });
+    }
+  });
+};
+
+exports.totalComments = function(auditions) {
+  return new Promise(function(resolve, reject) {
+    if(auditions.isEmpty()) {
+      resolve({});
+    } else {
+      Bookshelf.knex(UserComment.forge().tableName)
+      .select('audition_id')
+      .count('id as comments')
+      .whereIn('audition_id', auditions.pluck('id'))
+      .groupBy('audition_id')
+      .then(function(commentsCounts) {
+        var votesByAudition = {};
+        commentsCounts.forEach(function(commentsCount) {
+          votesByAudition[commentsCount.audition_id] = commentsCount.comments;
+        });
+        resolve(votesByAudition);
+      }).catch(function(err) {
+        reject(err);
+      });
+    }
+  });
 };
