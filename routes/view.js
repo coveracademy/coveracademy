@@ -3,6 +3,7 @@
 var contestService  = require('../apis/contestService'),
     userService     = require('../apis/userService'),
     messages        = require('../apis/internal/messages'),
+    constants       = require('../apis/internal/constants'),
     logger          = require('../configs/logger'),
     isAuthenticated = require('../utils/authorization').isAuthenticated,
     models          = require('../models'),
@@ -52,11 +53,8 @@ module.exports = function(router, app) {
 
   router.get('/user/:id', function(req, res, next) {
     var userId = req.params.id;
-    userService.getUser(userId, true).then(function(user) {
-      if(!user) {
-        messages.respondWithNotFound(res);
-      } else {
-        return Promise.props({
+    userService.findById(userId).then(function(user) {
+       return Promise.props({
           fan: userService.isFan(req.user, user),
           fans: userService.latestFans(user, constants.FIRST_PAGE, constants.NUMBER_OF_FANS_IN_PAGE),
           total_fans: userService.totalFans(user),
@@ -65,7 +63,6 @@ module.exports = function(router, app) {
           result.user = user;
           res.json(result);
         });
-      }
     }).catch(function(err) {
       logger.error(err);
       messages.respondWithError(err, res);
