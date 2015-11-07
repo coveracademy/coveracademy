@@ -26,7 +26,7 @@ exports.listUsers = function(ids) {
 };
 
 exports.findById = function(id) {
-  return User.forge({id: id}).fetch().catch(NotFoundError, function(err) {
+  return User.forge({id: id}).fetch({require: true}).catch(NotFoundError, function(err) {
     throw messages.notFoundError('user.notFound', 'User not found', err);
   });
 };

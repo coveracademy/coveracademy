@@ -63,11 +63,11 @@ module.exports = function(router, app) {
     });
   });
 
-  router.get('/user/:id', function(req, res, next) {
+  router.get('/users/:id', function(req, res, next) {
     var userId = req.params.id;
     userService.findById(userId).then(function(user) {
       return Promise.props({
-        fan: userService.isFan(req.user, user),
+        fan: userService.isFan(req.user, user) === true ? 1 : 0,
         fans: userService.latestFans(user, constants.FIRST_PAGE, constants.NUMBER_OF_FANS_IN_PAGE),
         total_fans: userService.totalFans(user),
         auditions: contestService.listUserAuditions(user)
