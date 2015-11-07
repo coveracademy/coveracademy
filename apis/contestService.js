@@ -68,8 +68,8 @@ exports.listWinnerAuditions = function(contest) {
 };
 
 exports.listWinnerAuditionsInContests = function(contests) {
-  return  Bookshelf.knex('audition')
-    .whereIn('contest_id', entities.getIds(obj))
+  return Bookshelf.knex('audition')
+    .whereIn('contest_id', contests.pluck('id'))
     .where('place', '<=', '3')
     .orderBy('place', 'asc')
     .then(function(rows) {
@@ -89,8 +89,8 @@ exports.listWinnerAuditionsInContests = function(contests) {
     });
 };
 
-exports.totalAuditions = function(obj) {
-  return Audition.where('contest_id', obj.id).where('approved', 1).count();
+exports.totalAuditions = function(contest) {
+  return Audition.where('contest_id', contest.id).where('approved', 1).count();
 };
 
 exports.totalAuditionsInContests = function(contests) {
@@ -133,24 +133,20 @@ exports.totalVotes = function(auditions) {
 };
 
 exports.totalVotesInContests = function(contests) {
-  return new Promise(function(resolve, reject) {
-    var qb = Bookshelf.knex('user_vote')
+  return Bookshelf.knex('user_vote')
     .select('contest.id')
     .count('user_vote.id as total_votes')
     .join('audition', 'user_vote.audition_id', 'audition.id')
     .join('contest', 'audition.contest_id', 'contest.id')
-    .whereIn('contest.id', entities.getIds(contests))
+    .whereIn('contest.id', contests.pluck('id'))
     .groupBy('contest.id')
     .then(function(rows) {
       var totalVotes = {};
       rows.forEach(function(row) {
         totalVotes[row.id] = row.total_votes;
       });
-      resolve(totalVotes);
-    }).catch(function(err) {
-      reject(err);
+      return totalVotes;
     });
-  });
 };
 
 exports.totalComments = function(auditions) {

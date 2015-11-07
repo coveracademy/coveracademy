@@ -14,9 +14,9 @@ var models          = require('../models'),
     Promise         = require('bluebird'),
     _               = require('lodash'),
     ValidationError = require('bookshelf-filteration').ValidationError,
+    User            = models.User,
     Bookshelf       = models.Bookshelf,
     NotFoundError   = Bookshelf.NotFoundError,
-    User            = models.User,
     $               = this;
 
 exports.listUsers = function(ids) {
