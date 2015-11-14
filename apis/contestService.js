@@ -4,7 +4,6 @@ var models          = require('../models'),
     settings        = require('../configs/settings'),
     logger          = require('../configs/logger'),
     pagination      = require('../utils/pagination'),
-    entities        = require('../utils/entities'),
     userService     = require('./userService'),
     notifier        = require('./internal/notifier'),
     postman         = require('./internal/postman'),
@@ -26,6 +25,10 @@ var models          = require('../models'),
 var auditionRelated = {withRelated: ['user']};
 var auditionWithContestRelated = {withRelated: ['contest']};
 
+exports.getContest = function(id) {
+  return Contest.forge({id: id}).fetch();
+};
+
 exports.listRunningContests = function() {
   return Contest.collection().query(function(qb) {
     qb.where('progress', 'running');
@@ -45,7 +48,49 @@ exports.latestContests = function(page, pageSize) {
   }).fetch();
 };
 
-exports.listAuditions = function(contests) {
+var listAuditions = function(rankType, contest, page, pageSize) {
+  return Audition.collection().query(function(qb) {
+    qb.where('contest_id', contest.id);
+    qb.where('approved', 1);
+    if(page && pageSize) {
+      qb.offset((page - 1) * pageSize);
+      qb.limit(pageSize);
+    }
+    if(rankType === 'latest') {
+      qb.orderBy('registration_date', 'desc');
+    } else {
+      qb.leftJoin('user_vote', function() {
+        this.on('audition.id', 'user_vote.audition_id');
+        this.andOn('user_vote.valid', 1);
+      });
+      qb.groupBy('audition.id');
+      qb.orderBy(Bookshelf.knex.raw('sum(user_vote.voting_power)'), 'desc');
+    }
+  }).fetch(auditionRelated);
+};
+
+exports.latestAuditions = function(contest, page, pageSize) {
+  return listAuditions('latest', contest, page, pageSize);
+};
+
+exports.bestAuditions = function(contest, page, pageSize) {
+  return listAuditions('best', contest, page, pageSize);
+};
+
+exports.randomAuditions = function(contest, size) {
+  return $.latestAuditions(contest).then(function(auditions) {
+    if(!size || size > auditions.length) {
+      size = auditions.length;
+    }
+    var randomAuditions = Audition.collection();
+    _.shuffle(_.range(size)).forEach(function(index) {
+      randomAuditions.add(auditions.at(index));
+    });
+    return randomAuditions;
+  });
+};
+
+exports.listAuditionsInContests = function(contests) {
   return Audition.collection().query(function(qb) {
     qb.whereIn('contest_id', contests.pluck('id'));
   }).fetch();
@@ -61,7 +106,7 @@ exports.listUserAuditions = function(user) {
 
 exports.listWinnerAuditions = function(contest) {
   return Audition.collection().query(function(qb) {
-    qb.where('contest_id', obj.id);
+    qb.where('contest_id', contest.id);
     qb.where('place', '<=', '3');
     qb.orderBy('place', 'asc');
   }).fetch(auditionRelated);
@@ -89,6 +134,16 @@ exports.listWinnerAuditionsInContests = function(contests) {
     });
 };
 
+exports.getUserAudition = function(user, contest, related) {
+  return new Promise(function(resolve, reject) {
+    if(!user) {
+      resolve();
+    } else {
+      resolve(Audition.forge({user_id: user.id, contest_id: contest.id}).fetch());
+    }
+  });
+};
+
 exports.totalAuditions = function(contest) {
   return Audition.where('contest_id', contest.id).where('approved', 1).count();
 };
@@ -107,6 +162,41 @@ exports.totalAuditionsInContests = function(contests) {
       });
       return totalAuditions;
     });
+};
+
+exports.listUserVotes = function(user, contest) {
+  return new Promise(function(resolve, reject) {
+    if(!user) {
+      resolve(UserVote.collection());
+    } else {
+      var promise = UserVote.collection().query(function(qb) {
+        qb.join('audition', 'user_vote.audition_id', 'audition.id');
+        qb.where('audition.contest_id', contest.id);
+        qb.where('user_vote.user_id', user.id);
+        qb.orderBy('user_vote.registration_date', 'asc');
+      }).fetch();
+      resolve(promise);
+    }
+  });
+};
+
+exports.totalUserVotes = function(user, contest) {
+  return new Promise(function(resolve, reject) {
+    if(!user) {
+      resolve(0);
+    } else {
+      Bookshelf.knex('user_vote')
+      .count('user_vote.id as total_votes')
+      .join('audition', 'user_vote.audition_id', 'audition.id')
+      .where('user_vote.user_id', user.id)
+      .where('audition.contest_id', contest.id)
+      .then(function(countRows) {
+        resolve(countRows[0].total_votes);
+      }).catch(function(err) {
+        reject(err);
+      });
+    }
+  });
 };
 
 exports.totalVotes = function(auditions) {
@@ -147,6 +237,30 @@ exports.totalVotesInContests = function(contests) {
       });
       return totalVotes;
     });
+};
+
+exports.totalVotesByAudition = function(auditions) {
+  return new Promise(function(resolve, reject) {
+    if(auditions.isEmpty()) {
+      resolve({});
+    } else {
+      Bookshelf.knex('user_vote')
+      .select('audition_id')
+      .count('id as votes')
+      .whereIn('audition_id', auditions.pluck('id'))
+      .where('valid', 1)
+      .groupBy('audition_id')
+      .then(function(votesCounts) {
+        var votesByAudition = {};
+        votesCounts.forEach(function(votesCount) {
+          votesByAudition[votesCount.audition_id] = votesCount.votes;
+        });
+        resolve(votesByAudition);
+      }).catch(function(err) {
+        reject(err);
+      });
+    }
+  });
 };
 
 exports.totalComments = function(auditions) {

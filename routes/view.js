@@ -16,11 +16,11 @@ module.exports = function(router, app) {
   router.get('/auditions', function(req, res, next) {
     contestService.listRunningContests().bind({}).then(function(contests) {
       this.contests = contests;
-      return contestService.listAuditions(this.contests);
+      return contestService.listAuditionsInContests(this.contests);
     }).then(function(auditions) {
       this.auditions = auditions;
       return Promise.props({
-        total_votes: contestService.totalVotes(this.auditions), 
+        total_votes: contestService.totalVotes(this.auditions),
         total_comments: contestService.totalComments(this.auditions),
         users: userService.listUsers(this.auditions.pluck('user_id'))
       });
@@ -33,7 +33,7 @@ module.exports = function(router, app) {
           user: result.users.get(audition.get('user_id')),
           total_votes: result.total_votes[audition.id],
           total_comments: result.total_comments[audition.id]
-        });      
+        });
       }, this);
       res.json(auditionsView);
     }).catch(function(err) {
@@ -55,8 +55,52 @@ module.exports = function(router, app) {
           total_auditions: totalAuditions[contest.id],
           winner_auditions: winnerAuditions[contest.id]
         });
-      });      
+      });
       res.json(contestsView);
+    }).catch(function(err) {
+      logger.error(err);
+      messages.respondWithError(err, res);
+    });
+  });
+
+  router.get('/contests/:id', function(req, res, next) {
+    var id = req.params.id;
+    contestService.getContest(id).then(function(contest) {
+      var rankType;
+      if(contest.get('progress') === 'waiting') {
+        rankType = 'latest';
+      } else if(contest.get('progress') == 'finished') {
+        rankType = 'best';
+      } else {
+        rankType = req.query.rank || 'random';
+      }
+      var auditionsPromise;
+      if(rankType === 'best') {
+        auditionsPromise = contestService.bestAuditions(contest);
+      } else if(rankType === 'latest') {
+        auditionsPromise = contestService.latestAuditions(contest);
+      } else {
+        auditionsPromise = contestService.randomAuditions(contest);
+      }
+      var winnersPromise = contest.get('progress') === 'finished' ? contestService.listWinnerAuditions(contest) : null;
+      return Promise.props({
+        auditions: auditionsPromise,
+        totalAuditions: contestService.totalAuditions(contest),
+        audition: contestService.getUserAudition(req.user, contest),
+        winnerAuditions: winnersPromise,
+        userVotes: contestService.listUserVotes(req.user, contest),
+        totalUserVotes: contestService.totalUserVotes(req.user, contest)
+      }).bind({}).then(function(result) {
+        this.result = result;
+        return contestService.totalVotesByAudition(result.auditions);
+      }).then(function(votesByAudition) {
+        this.result.votesByAudition = votesByAudition;
+        this.result.contest = contest;
+        this.result.rankType = rankType;
+        return this.result;
+      });
+    }).then(function(result) {
+      res.json(result);
     }).catch(function(err) {
       logger.error(err);
       messages.respondWithError(err, res);
