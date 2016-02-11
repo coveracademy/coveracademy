@@ -85,18 +85,18 @@ module.exports = function(router, app) {
       var winnersPromise = contest.get('progress') === 'finished' ? contestService.listWinnerAuditions(contest) : null;
       return Promise.props({
         auditions: auditionsPromise,
-        totalAuditions: contestService.totalAuditions(contest),
+        total_auditions: contestService.totalAuditions(contest),
         audition: contestService.getUserAudition(req.user, contest),
-        winnerAuditions: winnersPromise,
-        userVotes: contestService.listUserVotes(req.user, contest),
-        totalUserVotes: contestService.totalUserVotes(req.user, contest)
+        winner_auditions: winnersPromise,
+        user_votes: contestService.listUserVotes(req.user, contest),
+        total_user_votes: contestService.totalUserVotes(req.user, contest)
       }).bind({}).then(function(result) {
         this.result = result;
         return contestService.totalVotesByAudition(result.auditions);
       }).then(function(votesByAudition) {
-        this.result.votesByAudition = votesByAudition;
+        this.result.votes_by_audition = votesByAudition;
         this.result.contest = contest;
-        this.result.rankType = rankType;
+        this.result.rank_type = rankType;
         return this.result;
       });
     }).then(function(result) {
