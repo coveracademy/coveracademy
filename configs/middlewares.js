@@ -8,7 +8,7 @@ exports.configure = function(app) {
 
   // Aditional header to identify response from Cover Academy server
   app.use(function(req, res, next) {
-    res.setHeader('X-Cover Academy', 'Yes');
+    res.setHeader('X-Cover-Academy', 'Yes');
     return next();
   });
   // Sets the user model as a request attribute if the user has a session
