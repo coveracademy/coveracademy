@@ -9,7 +9,7 @@ var knex = require('knex')({
     port: settings.database.port,
     user: settings.database.user,
     password: settings.database.password,
-    database: 'cover_academy',
+    database: 'coveracademy',
     charset: 'utf8',
     timezone: 'UTC'
   }

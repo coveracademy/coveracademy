@@ -2,7 +2,7 @@
 
 var winston    = require('winston'),
     properties = require('./properties'),
-    level = properties.getValue('app.debug', false) === true ? 'debug' : 'info';
+    level      = properties.getValue('app.debug', false) === true ? 'debug' : 'info';
 
 var logger = new (winston.Logger)({
   transports: [

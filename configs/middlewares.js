@@ -1,14 +1,17 @@
 'use strict';
 
-var User   = require('../models').User;
-var logger = require('./logger');
+var User   = require('../models').User,
+    logger = require('./logger');
 
 exports.configure = function(app) {
   logger.info('Configuring middlewares');
 
-  // Aditional header to identify response from Cover Academy server
+  // Aditional headers
   app.use(function(req, res, next) {
-    res.setHeader('X-Cover-Academy', 'Yes');
+    // Header to identify response from CoverAcademy server
+    res.setHeader('X-CoverAcademy', 'Yes');
+    // Sets the client version
+    req.version = req.get('X-Version') ? parseInt(req.get('X-Version')) : 0;
     return next();
   });
   // Sets the user model as a request attribute if the user has a session

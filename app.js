@@ -3,18 +3,19 @@
 // require('newrelic');
 // require('pmx').init();
 
-var express      = require('express'),
-    morgan       = require('morgan'),
-    cookieParser = require('cookie-parser'),
-    bodyParser   = require('body-parser'),
-    redis        = require('redis'),
-    path         = require('path'),
-    session      = require('jwt-redis-session'),
-    routes       = require('./configs/routes'),
-    middlewares  = require('./configs/middlewares'),
-    settings     = require('./configs/settings'),
-    logger       = require('./configs/logger'),
-    serverLogger = require('./configs/server-logger');
+var express        = require('express'),
+    morgan         = require('morgan'),
+    cookieParser   = require('cookie-parser'),
+    bodyParser     = require('body-parser'),
+    redis          = require('redis'),
+    path           = require('path'),
+    session        = require('jwt-redis-session'),
+    logger         = require('./configs/logger'),
+    settings       = require('./configs/settings'),
+    authentication = require('./configs/authentication'),
+    middlewares    = require('./configs/middlewares'),
+    routes         = require('./configs/routes'),
+    serverLogger   = require('./configs/server-logger');
 
 // Parse string to date when call JSON.parse
 require('json.date-extensions');
@@ -46,6 +47,7 @@ app.use(session({
   requestArg: 'token'
 }));
 
+authentication.configure(app);
 middlewares.configure(app);
 routes.configure(express, app);
 

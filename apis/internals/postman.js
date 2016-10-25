@@ -3,7 +3,7 @@
 var models         = require('../../models'),
     settings       = require('../../configs/settings'),
     logger         = require('../../configs/logger'),
-    messages       = require('../../apis/internal/messages'),
+    messages       = require('../../apis/internals/messages'),
     Promise        = require('bluebird'),
     restify        = require('restify'),
     ScheduledEmail = models.ScheduledEmail,

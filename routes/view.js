@@ -2,8 +2,8 @@
 
 var contestService  = require('../apis/contestService'),
     userService     = require('../apis/userService'),
-    messages        = require('../apis/internal/messages'),
-    constants       = require('../apis/internal/constants'),
+    messages        = require('../apis/internals/messages'),
+    constants       = require('../apis/internals/constants'),
     logger          = require('../configs/logger'),
     isAuthenticated = require('../utils/authorization').isAuthenticated,
     models          = require('../models'),

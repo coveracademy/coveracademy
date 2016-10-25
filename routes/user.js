@@ -1,7 +1,7 @@
 'use strict';
 
 var userService     = require('../apis/userService'),
-    messages        = require('../apis/internal/messages'),
+    messages        = require('../apis/internals/messages'),
     logger          = require('../configs/logger'),
     settings        = require('../configs/settings'),
     isAuthenticated = require('../utils/authorization').isAuthenticated,

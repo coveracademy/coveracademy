@@ -5,10 +5,10 @@ var models          = require('../models'),
     logger          = require('../configs/logger'),
     pagination      = require('../utils/pagination'),
     entities        = require('../utils/entities'),
-    notifier        = require('./internal/notifier'),
-    postman         = require('./internal/postman'),
-    messages        = require('./internal/messages'),
-    constants       = require('./internal/constants'),
+    notifier        = require('./internals/notifier'),
+    postman         = require('./internals/postman'),
+    messages        = require('./internals/messages'),
+    constants       = require('./internals/constants'),
     moment          = require('moment').utc,
     momentTz        = require('moment-timezone').tz,
     Promise         = require('bluebird'),
@@ -19,16 +19,22 @@ var models          = require('../models'),
     NotFoundError   = Bookshelf.NotFoundError,
     $               = this;
 
-exports.listUsers = function(ids) {
-  return User.collection().query(function(qb) {
-    qb.whereIn('id', ids);
-  }).fetch();
+exports.getUser = function(id, related, require) {
+  var options = _.assign(related ? {withRelated: related} : {}, {require: require === false ? false : true});
+  return User.forge({id: id}).fetch(options).catch(NotFoundError, function(err) {
+    throw messages.notFoundError('user.doesNotExist', 'User does not exist', err);
+  });
 };
 
-exports.findById = function(id) {
-  return User.forge({id: id}).fetch({require: true}).catch(NotFoundError, function(err) {
-    throw messages.notFoundError('user.notFound', 'User not found', err);
+exports.getUserByFacebookAccount = function(facebookAccount, related, require) {
+  var options = _.assign(related ? {withRelated: related} : {}, {require: require === false ? false : true});
+  return User.forge({facebook_account: facebookAccount}).fetch(options).catch(NotFoundError, function(err) {
+    throw messages.notFoundError('user.doesNotExist', 'User does not exists', err);
   });
+};
+
+exports.listUsers = function(ids, related) {
+  return User.query('whereIn', 'id', ids).fetchAll({withRelated: related});
 };
 
 exports.isFan = function(fan, user) {

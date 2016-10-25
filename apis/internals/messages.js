@@ -29,6 +29,11 @@ function APIError(status, key, message, cause) {
 }
 util.inherits(APIError, Error);
 
+function NotFoundError(key, message, cause) {
+  NotFoundError.super_.call(this, 404, key, message, cause);
+}
+util.inherits(NotFoundError, APIError);
+
 function getErrorKey(err) {
   if(err instanceof APIError) {
     return err.key;
@@ -37,7 +42,7 @@ function getErrorKey(err) {
   }
 }
 
-function isDupEntryError(err) {
+function isDuplicatedEntryError(err) {
   return err.code === 'ER_DUP_ENTRY';
 }
 
@@ -49,20 +54,16 @@ function apiError(key, message, cause) {
   return new APIError(400, key, message, cause);
 }
 
-function apiErrorWithCode(status, key, message, cause) {
-  return new APIError(status, key, message, cause);
-}
-
 function unexpectedError(message, cause) {
   return apiError('unexpectedError', message, cause);
 }
 
 function internalError(message, cause) {
-  return apiErrorWithCode(500, 'internalError', message, cause);
+  return new APIError(500, 'internalError', message, cause);
 }
 
 function notFoundError(key, message, cause) {
-  return apiErrorWithCode(404, key, message, cause);
+  return new NotFoundError(key, message, cause);
 }
 
 function validationError(prefix, err) {
@@ -92,7 +93,7 @@ function respondWithError(err, res) {
 }
 
 function respondWithNotFound(res) {
-  res.send(404);
+  res.sendStatus(404);
 }
 
 function respondWithMovedPermanently(toView, toParams, res) {
@@ -106,9 +107,8 @@ function respondWithRedirection(toView, toParams, res) {
 module.exports = {
   getErrorKey: getErrorKey,
   isAPIError: isAPIError,
-  isDupEntryError: isDupEntryError,
+  isDuplicatedEntryError: isDuplicatedEntryError,
   apiError: apiError,
-  apiErrorWithCode: apiErrorWithCode,
   unexpectedError: unexpectedError,
   internalError: internalError,
   notFoundError: notFoundError,
@@ -117,5 +117,6 @@ module.exports = {
   respondWithNotFound: respondWithNotFound,
   respondWithMovedPermanently: respondWithMovedPermanently,
   respondWithRedirection: respondWithRedirection,
-  APIError: APIError
+  APIError: APIError,
+  NotFoundError: NotFoundError
 }
