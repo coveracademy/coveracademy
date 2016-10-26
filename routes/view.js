@@ -26,10 +26,11 @@ module.exports = function(router, app) {
       });
     }).then(function(result) {
       var auditionsView = [];
+      var context = this;
       this.auditions.forEach(function(audition) {
         auditionsView.push({
           audition: audition,
-          contest: this.contests.get(audition.get('contest_id')),
+          contest: context.contests.get(audition.get('contest_id')),
           user: result.users.get(audition.get('user_id')),
           total_votes: result.total_votes[audition.id],
           total_comments: result.total_comments[audition.id]
