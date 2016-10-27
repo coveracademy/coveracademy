@@ -32,6 +32,11 @@ var Contest = Bookshelf.Model.extend({
   hasTimestamps: ['registration_date']
 });
 
+var ContestWinner = Bookshelf.Model.extend({
+  idAttribute: 'id',
+  tableName: 'contest_winner'
+});
+
 var Fan = Bookshelf.Model.extend({
   idAttribute: 'id',
   tableName: 'fan',
@@ -65,6 +70,7 @@ module.exports = {
   Bookshelf: Bookshelf,
   Comment: Comment,
   Contest: Contest,
+  ContestWinner: ContestWinner,
   Fan: Fan,
   Prize: Prize,
   User: User,

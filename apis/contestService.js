@@ -1,33 +1,27 @@
 'use strict';
 
-var settings        = require('../configs/settings'),
-    logger          = require('../configs/logger'),
-    models          = require('../models'),
-    postman         = require('./internals/postman'),
-    messages        = require('./internals/messages'),
-    constants       = require('./internals/constants'),
-    userService     = require('./userService'),
-    shortid         = require('shortid'),
-    moment          = require('moment').utc,
-    ValidationError = require('bookshelf-filteration').ValidationError,
-    Promise         = require('bluebird'),
-    _               = require('lodash'),
-    Bookshelf       = models.Bookshelf,
-    Comment         = models.Comment,
-    Contest         = models.Contest,
-    User            = models.User,
-    UserLike        = models.UserLike,
-    Video           = models.Video,
-    $               = this;
+var models        = require('../models'),
+    messages      = require('./internals/messages'),
+    constants     = require('./internals/constants'),
+    Promise       = require('bluebird'),
+    _             = require('lodash'),
+    Bookshelf     = models.Bookshelf,
+    Comment       = models.Comment,
+    Contest       = models.Contest,
+    ContestWinner = models.ContestWinner,
+    User          = models.User,
+    UserLike      = models.UserLike,
+    Video         = models.Video,
+    $             = this;
 
-var videoRelated = {withRelated: ['user']};
-var videoWithContestRelated = {withRelated: ['contest']};
+var contestWinnerWithUserRelated = {withRelated: ['user']};
+var videoWithUserRelated = {withRelated: ['user']};
 
 exports.getContest = function(id) {
   return Contest.forge({id: id}).fetch();
 };
 
-exports.runningContests = function() {
+exports.listRunningContests = function() {
   return Contest.collection().query(function(qb) {
     var now = new Date();
     qb.where('start_date', '<', now);
@@ -36,7 +30,7 @@ exports.runningContests = function() {
   }).fetch();
 };
 
-exports.latestContests = function(page, pageSize) {
+exports.listLatestContests = function(page, pageSize) {
   return Contest.collection().query(function(qb) {
     qb.whereNotNull('start_date');
     qb.whereNotNull('end_date');
@@ -48,13 +42,69 @@ exports.latestContests = function(page, pageSize) {
   }).fetch();
 };
 
-exports.randomAuditions = function(contests) {
-  return Video.query('whereIn', 'contest_id', contests.pluck('id')).fetchAll().then(function(videos) {
+exports.listRandomAuditions = function(contests, related) {
+  return Video.query('whereIn', 'contest_id', contests.pluck('id')).fetchAll({withRelated: related}).then(function(videos) {
     return Video.collection(videos.shuffle());
   });
 };
 
-exports.totalAuditions = function(contests) {
+exports.listAuditions = function(contest) {
+  return Promise.resolve().then(function() {
+    var rankType;
+    if(contest.get('progress') === constants.CONTEST_WAITING) {
+      rankType = constants.RANK_LATEST;
+    } else if(contest.get('progress') == constants.CONTEST_FINISHED) {
+      rankType = constants.RANK_BEST;
+    } else {
+      rankType = constants.RANK_RANDOM;
+    }
+    return Video.collection().query(function(qb) {
+      qb.where('contest_id', contest.id);
+      if(rankType === constants.RANK_LATEST) {
+        qb.orderBy('registration_date', 'desc');
+      } else if(rankType === constants.RANK_BEST) {
+        qb.leftJoin(UserLike.forge().tableName, function() {
+          this.on('video.id', 'user_like.video_id');
+          this.andOn('user_like.valid', 1);
+        });
+        qb.groupBy('video.id');
+        qb.orderBy(Bookshelf.knex.raw('sum(user_like.voting_power)'), 'desc');
+      }
+    }).fetch(videoWithUserRelated).then(function(auditions) {
+      if(rankType === constants.RANK_LATEST) {
+        return Video.collection(auditions.shuffle());
+      } else {
+        return auditions;
+      }
+    });
+  });
+};
+
+exports.listWinnersInContests = function(contests) {
+  return ContestWinner.query(function(qb) {
+    qb.whereIn('contest_id', contests.pluck('id'));
+    qb.orderBy('contest_id', 'asc');
+    qb.orderBy('place', 'asc');
+  }).fetchAll(contestWinnerWithUserRelated).then(function(contestWinners) {
+    var winnersByContest = {};
+    contestWinners.forEach(function(contestWinner) {
+      var winners = winnersByContest[contestWinner.get('contest_id')] || User.collection();
+      if(winners.isEmpty()) {
+        winnersByContest[contestWinner.get('contest_id')] = winners;
+      }
+      winners.add(contestWinner.related('user'));
+    });
+    return winnersByContest;
+  });
+};
+
+exports.listWinners = function(contest) {
+  return $.listWinnersInContests(Contest.collection().add(contest)).then(function(winners) {
+    return winners[contest.id];
+  });
+};
+
+exports.totalAuditionsInContests = function(contests) {
   return Bookshelf.knex(Video.forge().tableName)
     .select('contest_id')
     .count('id as auditions')
@@ -66,6 +116,12 @@ exports.totalAuditions = function(contests) {
       auditionsByContest[row.contest_id] = row.auditions;
     });
     return auditionsByContest;
+  });
+};
+
+exports.totalAuditions = function(contest) {
+  return $.totalAuditionsInContests(Contest.collection().add(contest)).then(function(totalAuditions) {
+    return totalAuditions[contest.id];
   });
 };
 
@@ -103,27 +159,4 @@ exports.totalComments = function(auditions) {
     });
     return commentsByVideo;
   });
-};
-
-exports.listWinners = function(contests) {
-  return User.collection();
-  // return Bookshelf.knex(Video.forge().tableName)
-  //   .whereIn('contest_id', contests.pluck('id'))
-  //   .where('place', '<=', '3')
-  //   .orderBy('place', 'asc')
-  // .then(function(rows) {
-  //   var winnerAuditions = {};
-  //   var allAuditions = Audition.collection();
-  //   rows.forEach(function(row) {
-  //     if(!winnerAuditions[row.contest_id]) {
-  //       winnerAuditions[row.contest_id] = Audition.collection();
-  //     }
-  //     var audition = Audition.forge(row);
-  //     winnerAuditions[row.contest_id].add(audition);
-  //     allAuditions.add(audition);
-  //   });
-  //   return allAuditions.load(auditionRelated.withRelated).then(function() {
-  //     return winnerAuditions;
-  //   });
-  // });
 };

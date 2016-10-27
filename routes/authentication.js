@@ -13,16 +13,18 @@ module.exports = function(router, app) {
       req.session.update(function(err) {
         if(err) {
           messages.respondWithError(messages.apiError('user.auth.error', 'Error authenticating user', err), res);
+        } else {
+          res.json({token: req.session.jwt});
         }
-        res.json({token: req.session.jwt});
       });
     } else {
       req.session.user = req.user.toJSON();
       req.session.create(null, function(err, token) {
         if(err) {
           messages.respondWithError(messages.apiError('user.auth.error', 'Error authenticating user', err), res);
+        } else {
+          res.json({token: token});
         }
-        res.json({token: token});
       });
     }
   });
@@ -30,15 +32,10 @@ module.exports = function(router, app) {
   router.post('/logout', function(req, res, next) {
     var user = req.user;
     req.session.destroy(function(err) {
-      if (err) {
+      if(err) {
         logger.error(err);
         messages.respondWithError(messages.apiError('user.auth.logout.error', 'Error logging out user', err), res);
       } else {
-        if(user) {
-          userService.logout(user).catch(function(err) {
-            logger.error('Error marking user %d logged out', user.id, err);
-          });
-        }
         res.json();
       }
     });
