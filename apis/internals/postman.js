@@ -6,7 +6,6 @@ var models         = require('../../models'),
     messages       = require('../../apis/internals/messages'),
     Promise        = require('bluebird'),
     restify        = require('restify'),
-    ScheduledEmail = models.ScheduledEmail,
     Bookshelf      = models.Bookshelf,
     postman        = restify.createJsonClient('http://' + settings.postman.host + ':' + settings.postman.port),
     $              = this;
@@ -38,54 +37,6 @@ exports.send = function(to, subject, text) {
 exports.userRegistration = function(user) {
   return new Promise(function(resolve, reject) {
     postman.post('/user/registration', {user: user.id}, function(err, req, res, obj) {
-      if(err) {
-        reject(err);
-      } else {
-        resolve(obj);
-      }
-    });
-  });
-};
-
-exports.userVerification = function(user, verificationToken, registration) {
-  return new Promise(function(resolve, reject) {
-    postman.post('/user/verification', {user: user.id, token: verificationToken.get('token'), registration: registration}, function(err, req, res, obj) {
-      if(err) {
-        reject(err);
-      } else {
-        resolve(obj);
-      }
-    });
-  });
-};
-
-exports.inviteContact = function(invitation) {
-  return new Promise(function(resolve, reject) {
-    postman.post('/contacts/invite', {invitation: invitation.id}, function(err, req, res, obj) {
-      if(err) {
-        reject(err);
-      } else {
-        resolve(obj);
-      }
-    });
-  });
-};
-
-exports.resetPasswordRequest = function(user) {
-  return new Promise(function(resolve, reject) {
-    postman.post('/password/resetRequest', {user: user.id}, function(err, req, res, obj) {
-      if(err) {
-        reject(err);
-      } else {
-        resolve(obj);
-      }
-    });
-  });
-};
-
-exports.verifyEmailRequest = function(user) {
-  return new Promise(function(resolve, reject) {
-    postman.post('/email/verifyRequest', {user: user.id}, function(err, req, res, obj) {
       if(err) {
         reject(err);
       } else {

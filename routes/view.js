@@ -14,29 +14,29 @@ var contestService  = require('../apis/contestService'),
 module.exports = function(router, app) {
 
   router.get('/auditions', function(req, res, next) {
-    contestService.listRunningContests().bind({}).then(function(contests) {
+    contestService.runningContests().bind({}).then(function(contests) {
       this.contests = contests;
-      return contestService.listAuditionsInContests(this.contests);
-    }).then(function(auditions) {
-      this.auditions = auditions;
-      return Promise.props({
-        total_votes: contestService.totalVotes(this.auditions),
-        total_comments: contestService.totalComments(this.auditions),
-        users: userService.listUsers(this.auditions.pluck('user_id'))
-      });
-    }).then(function(result) {
-      var auditionsView = [];
+      return contestService.randomAuditions(contests);
+    }).then(function(videos) {
+      this.videos = videos;
+      return Promise.all([
+        userService.listUsers(!videos.isEmpty() ? videos.pluck('user_id') : []),
+        contestService.totalLikes(videos),
+        contestService.totalComments(videos)
+      ]);
+    }).spread(function(users, totalLikes, totalComments) {
+      var videosView = [];
       var context = this;
-      this.auditions.forEach(function(audition) {
-        auditionsView.push({
-          audition: audition,
-          contest: context.contests.get(audition.get('contest_id')),
-          user: result.users.get(audition.get('user_id')),
-          total_votes: result.total_votes[audition.id],
-          total_comments: result.total_comments[audition.id]
+      this.videos.forEach(function(video) {
+        videosView.push({
+          video: video,
+          contest: context.contests.get(video.get('contest_id')),
+          user: users.get(video.get('user_id')),
+          total_likes: totalLikes[video.id],
+          total_comments: totalComments[video.id]
         });
-      }, this);
-      res.json(auditionsView);
+      });
+      res.json(videosView);
     }).catch(function(err) {
       logger.error(err);
       messages.respondWithError(err, res);
@@ -44,17 +44,19 @@ module.exports = function(router, app) {
   });
 
   router.get('/contests', function(req, res, next) {
-    contestService.latestContests(constants.FIRST_PAGE, constants.NUMBER_OF_CONTESTS_IN_PAGE).bind({}).then(function(contests) {
+    contestService.latestContests(constants.FIRST_PAGE, constants.CONTESTS_PER_PAGE).bind({}).then(function(contests) {
       this.contests = contests;
-      return Promise.all([contestService.totalVotesInContests(contests), contestService.totalAuditionsInContests(contests), contestService.listWinnerAuditionsInContests(contests)]);
-    }).spread(function(totalVotes, totalAuditions, winnerAuditions) {
+      return Promise.all([
+        contestService.totalAuditions(contests),
+        contestService.listWinners(contests)
+      ]);
+    }).spread(function(totalAuditions, winners) {
       var contestsView = [];
       this.contests.forEach(function(contest) {
         contestsView.push({
           contest: contest,
-          total_votes: totalVotes[contest.id],
           total_auditions: totalAuditions[contest.id],
-          winner_auditions: winnerAuditions[contest.id]
+          winners: winners[contest.id]
         });
       });
       res.json(contestsView);
@@ -75,27 +77,27 @@ module.exports = function(router, app) {
       } else {
         rankType = req.query.rank || 'random';
       }
-      var auditionsPromise;
+      var videosPromise;
       if(rankType === 'best') {
-        auditionsPromise = contestService.bestAuditions(contest);
+        videosPromise = contestService.bestAuditions(contest);
       } else if(rankType === 'latest') {
-        auditionsPromise = contestService.latestAuditions(contest);
+        videosPromise = contestService.latestAuditions(contest);
       } else {
-        auditionsPromise = contestService.randomAuditions(contest);
+        videosPromise = contestService.randomAuditions(contest);
       }
       var winnersPromise = contest.get('progress') === 'finished' ? contestService.listWinnerAuditions(contest) : null;
       return Promise.props({
-        auditions: auditionsPromise,
-        total_auditions: contestService.totalAuditions(contest),
-        audition: contestService.getUserAudition(req.user, contest),
-        winner_auditions: winnersPromise,
-        user_votes: contestService.listUserVotes(req.user, contest),
-        total_user_votes: contestService.totalUserVotes(req.user, contest)
+        videos: videosPromise,
+        total_videos: contestService.totalAuditions(contest),
+        video: contestService.getUserAudition(req.user, contest),
+        winner_videos: winnersPromise,
+        user_votes: contestService.listUserLikes(req.user, contest),
+        total_user_votes: contestService.totalUserLikes(req.user, contest)
       }).bind({}).then(function(result) {
         this.result = result;
-        return contestService.totalVotesByAudition(result.auditions);
+        return contestService.totalLikesByAudition(result.videos);
       }).then(function(votesByAudition) {
-        this.result.votes_by_audition = votesByAudition;
+        this.result.votes_by_video = votesByAudition;
         this.result.contest = contest;
         this.result.rank_type = rankType;
         return this.result;
@@ -115,7 +117,7 @@ module.exports = function(router, app) {
         fan: userService.isFan(req.user, user) === true ? 1 : 0,
         fans: userService.latestFans(user, constants.FIRST_PAGE, constants.NUMBER_OF_FANS_IN_PAGE),
         total_fans: userService.totalFans(user),
-        auditions: contestService.listUserAuditions(user)
+        videos: contestService.listUserAuditions(user)
       }).then(function(result) {
         result.user = user;
         res.json(result);

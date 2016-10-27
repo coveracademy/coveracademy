@@ -31,21 +31,11 @@ try {
           clientSecret: '9331e1f0ee96c8ea7789a22e55aacdba'
         }
       },
-      _notifier = {
-        host: properties.getValue('notifier.host', 'localhost'),
-        port: properties.getValue('notifier.port', 3100),
-        ioPort: properties.getValue('notifier.ioPort', 3101)
-      },
       _postman = {
         contact: 'contact@coveracademy.com',
         apiKey: 'key-335a52e99eb6d3aac9abc94e791a6738',
         host: properties.getValue('postman.host', 'localhost'),
         port: properties.getValue('postman.port', 3200)
-      },  
-      _smsGateway = {
-        accountSid: 'ACe016f66f70f3773a2a07b3621d64d980',
-        authToken: '6f229a92172b96b5b353b51eb7a94ef7',
-        phoneNumber: '+12513339933'
       };
 
   logger.info('Using %s environment settings', _nodeEnv);
@@ -59,11 +49,9 @@ try {
   exports.domain = _domain;
   exports.nodeEnv = _nodeEnv;
   exports.nodePort = _nodePort;
-  exports.notifier = _notifier;
   exports.postman = _postman;
   exports.publicPath = _publicPath;
   exports.redis = _redis;
-  exports.smsGateway = _smsGateway;
   exports.website = _website;
 } catch(err) {
   logger.error('Error loading settings', err);
