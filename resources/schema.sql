@@ -50,6 +50,7 @@ create table video (
   small_thumbnail   varchar(255) default null,
   medium_thumbnail  varchar(255) default null,
   large_thumbnail   varchar(255) default null,
+  approved          tinyint not null,
   registration_date timestamp not null default current_timestamp,
   primary key (id),
   unique key `uq_video_url` (`url`),

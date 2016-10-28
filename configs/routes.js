@@ -8,6 +8,7 @@ exports.configure = function(express, app) {
 
   require('../routes/authentication')(express.Router(), app);
   require('../routes/user')(express.Router(), app);
+  require('../routes/video')(express.Router(), app);
   require('../routes/contest')(express.Router(), app);
   require('../routes/view')(express.Router(), app);
 

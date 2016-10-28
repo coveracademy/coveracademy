@@ -6,7 +6,6 @@ var models        = require('../models'),
     Promise       = require('bluebird'),
     _             = require('lodash'),
     Bookshelf     = models.Bookshelf,
-    Comment       = models.Comment,
     Contest       = models.Contest,
     ContestWinner = models.ContestWinner,
     User          = models.User,
@@ -68,11 +67,11 @@ exports.listAuditions = function(contest) {
         });
         qb.groupBy('video.id');
       }
-    }).fetch(videoWithUserRelated).then(function(auditions) {
+    }).fetch(videoWithUserRelated).then(function(videos) {
       if(rankType === constants.RANK_LATEST) {
-        return Video.collection(auditions.shuffle());
+        return Video.collection(videos.shuffle());
       } else {
-        return auditions;
+        return videos;
       }
     });
   });
@@ -102,72 +101,23 @@ exports.listWinners = function(contest) {
   });
 };
 
-exports.listLikedVideos = function(user, videos) {
-  return UserLike.query(function(qb) {
-    qb.where('user_id', user.id);
-    qb.whereIn('video_id', videos.pluck('id'));
-  }).fetchAll().then(function(likes) {
-    var videosIds = new Set();
-    likes.forEach(function(like) {
-      videosIds.add(like.get('video_id'));
-    });
-    return videosIds;
-  });
-};
-
 exports.totalAuditionsInContests = function(contests) {
   return Bookshelf.knex(Video.forge().tableName)
     .select('contest_id')
-    .count('id as auditions')
+    .count('id as videos')
     .whereIn('contest_id', contests.pluck('id'))
     .groupBy('contest_id')
   .then(function(rows) {
-    var auditionsByContest = {};
+    var videosByContest = {};
     rows.forEach(function(row) {
-      auditionsByContest[row.contest_id] = row.auditions;
+      videosByContest[row.contest_id] = row.videos;
     });
-    return auditionsByContest;
+    return videosByContest;
   });
 };
 
 exports.totalAuditions = function(contest) {
-  return $.totalAuditionsInContests(Contest.collection().add(contest)).then(function(totalAuditions) {
-    return totalAuditions[contest.id];
-  });
-};
-
-exports.totalLikes = function(auditions) {
-  if(auditions.isEmpty()) {
-    return Promise.resolve({});
-  } 
-  return Bookshelf.knex(UserLike.forge().tableName)
-    .select('video_id')
-    .count('id as votes')
-    .whereIn('video_id', auditions.pluck('id'))
-    .groupBy('video_id')
-  .then(function(rows) {
-    var votesByVideo = {};
-    rows.forEach(function(row) {
-      votesByVideo[row.video_id] = row.votes;
-    });
-    return votesByVideo;
-  });
-};
-
-exports.totalComments = function(auditions) {
-  if(auditions.isEmpty()) {
-    return Promise.resolve({});
-  } 
-  return Bookshelf.knex(Comment.forge().tableName)
-    .select('video_id')
-    .count('id as comments')
-    .whereIn('video_id', auditions.pluck('id'))
-    .groupBy('video_id')
-  .then(function(rows) {
-    var commentsByVideo = {};
-    rows.forEach(function(row) {
-      commentsByVideo[row.video_id] = row.comments;
-    });
-    return commentsByVideo;
+  return $.totalAuditionsInContests(Contest.collection().add(contest)).then(function(totalVideos) {
+    return totalVideos[contest.id];
   });
 };

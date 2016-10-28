@@ -1,7 +1,8 @@
 'use strict';
 
-var contestService  = require('../apis/contestService'),
-    userService     = require('../apis/userService'),
+var userService     = require('../apis/userService'),
+    videoService    = require('../apis/videoService'),
+    contestService  = require('../apis/contestService'),
     messages        = require('../apis/internals/messages'),
     constants       = require('../apis/internals/constants'),
     logger          = require('../configs/logger'),
@@ -14,26 +15,26 @@ module.exports = function(router, app) {
     contestService.listRunningContests().bind({}).then(function(contests) {
       this.contests = contests;
       return contestService.listRandomAuditions(contests, ['user']);
-    }).then(function(auditions) {
-      this.auditions = auditions;
+    }).then(function(videos) {
+      this.videos = videos;
       return Promise.all([
-        contestService.totalLikes(auditions),
-        contestService.totalComments(auditions),
-        contestService.listLikedVideos(req.user, auditions)
+        videoService.totalLikes(videos),
+        videoService.totalComments(videos),
+        videoService.listLikedVideos(req.user, videos)
       ]);
-    }).spread(function(totalLikes, totalComments, likedAuditions) {
-      var auditionsView = [];
+    }).spread(function(totalLikes, totalComments, likedVideos) {
+      var videosView = [];
       var context = this;
-      this.auditions.forEach(function(audition) {
-        audition.relations.contest = context.contests.get(audition.get('contest_id'));
-        auditionsView.push({
-          audition: audition,
-          total_likes: totalLikes[audition.id],
-          total_comments: totalComments[audition.id],
-          liked: likedAuditions.has(audition.id)
+      this.videos.forEach(function(video) {
+        video.relations.contest = context.contests.get(video.get('contest_id'));
+        videosView.push({
+          video: video,
+          total_likes: totalLikes[video.id],
+          total_comments: totalComments[video.id],
+          liked: likedVideos.has(video.id)
         });
       });
-      res.json(auditionsView);
+      res.json(videosView);
     }).catch(function(err) {
       logger.error(err);
       messages.respondWithError(err, res);
@@ -47,13 +48,13 @@ module.exports = function(router, app) {
         contestService.totalAuditionsInContests(contests),
         contestService.listWinnersInContests(contests)
       ]);
-    }).spread(function(totalAuditions, winners) {
+    }).spread(function(totalVideos, winners) {
       var contestsView = [];
       this.contests.forEach(function(contest) {
         contestsView.push({
           contest: contest,
           winners: winners[contest.id],
-          total_auditions: totalAuditions[contest.id]
+          total_videos: totalVideos[contest.id]
         });
       });
       res.json(contestsView);
@@ -70,22 +71,22 @@ module.exports = function(router, app) {
       this.result.contest = contest;
       return Promise.props({
         winners: contestService.listWinners(contest),
-        auditions: contestService.listAuditions(contest),
-        total_auditions: contestService.totalAuditions(contest)
+        videos: contestService.listAuditions(contest),
+        total_videos: contestService.totalAuditions(contest)
       });
     }).then(function(result) {
       this.result.winners = result.winners;
-      this.result.auditions = result.auditions;
-      this.result.total_auditions = result.total_auditions;
+      this.result.videos = result.videos;
+      this.result.total_videos = result.total_videos;
       return Promise.props({
-        total_likes: contestService.totalLikes(result.auditions),
-        total_comments: contestService.totalComments(result.auditions),
-        liked_auditions: contestService.listLikedVideos(req.user, result.auditions)
+        total_likes: videoService.totalLikes(result.videos),
+        total_comments: videoService.totalComments(result.videos),
+        liked_videos: videoService.listLikedVideos(req.user, result.videos)
       });
     }).then(function(result) {
       this.result.total_likes = result.total_likes;
       this.result.total_comments = result.total_comments;
-      this.result.liked_auditions = Array.from(result.liked_auditions);
+      this.result.liked_videos = Array.from(result.liked_videos);
       res.json(this.result);
     }).catch(function(err) {
       logger.error(err);
@@ -100,7 +101,7 @@ module.exports = function(router, app) {
         fan: userService.isFan(req.user, user) === true ? 1 : 0,
         fans: userService.latestFans(user, constants.FIRST_PAGE, constants.NUMBER_OF_FANS_IN_PAGE),
         total_fans: userService.totalFans(user),
-        videos: contestService.listUserAuditions(user)
+        videos: videoService.listUserAuditions(user)
       }).then(function(result) {
         result.user = user;
         res.json(result);

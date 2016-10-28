@@ -20,17 +20,6 @@ module.exports = function(router, app) {
     });
   });
 
-  // Updates the user
-  router.put('/', isAuthenticated, function(req, res, next) {
-    var user = User.forge(req.body);
-    userService.updateUser(user).then(function(user) {
-      res.json(user);
-    }).catch(function(err) {
-      logger.error(err);
-      messages.respondWithError(err, res);
-    });
-  });
-
   // Get authenticated user
   router.get('/authenticated', isAuthenticated, function(req, res, next) {
     res.json(req.user);
@@ -40,25 +29,6 @@ module.exports = function(router, app) {
   router.get('/:id', isAuthenticated, function(req, res, next) {
     userService.getUser(req.params.id, req.query.related).then(function(user) {
       res.json(user);
-    }).catch(function(err) {
-      logger.error(err);
-      messages.respondWithError(err, res);
-    });
-  });
-
-  // Get an user by Email
-  router.get('/emails/:email', function(req, res, next) {
-    userService.getUserByEmail(req.params.email, req.query.related, false).then(function(user) {
-      res.json(user);
-    }).catch(function(err) {
-      logger.error(err);
-      messages.respondWithError(err, res);
-    });
-  });
-
-  router.post('/email/verify', function(req, res, next) {
-    userService.verifyEmail(req.body.hash).then(function() {
-      res.json({});
     }).catch(function(err) {
       logger.error(err);
       messages.respondWithError(err, res);
