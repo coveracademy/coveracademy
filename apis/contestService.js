@@ -102,6 +102,19 @@ exports.listWinners = function(contest) {
   });
 };
 
+exports.listLikedVideos = function(user, videos) {
+  return UserLike.query(function(qb) {
+    qb.where('user_id', user.id);
+    qb.whereIn('video_id', videos.pluck('id'));
+  }).fetchAll().then(function(likes) {
+    var videosIds = new Set();
+    likes.forEach(function(like) {
+      videosIds.add(like.get('video_id'));
+    });
+    return videosIds;
+  });
+};
+
 exports.totalAuditionsInContests = function(contests) {
   return Bookshelf.knex(Video.forge().tableName)
     .select('contest_id')

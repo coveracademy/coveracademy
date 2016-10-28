@@ -18,9 +18,10 @@ module.exports = function(router, app) {
       this.auditions = auditions;
       return Promise.all([
         contestService.totalLikes(auditions),
-        contestService.totalComments(auditions)
+        contestService.totalComments(auditions),
+        contestService.listLikedVideos(req.user, auditions)
       ]);
-    }).spread(function(totalLikes, totalComments) {
+    }).spread(function(totalLikes, totalComments, likedAuditions) {
       var auditionsView = [];
       var context = this;
       this.auditions.forEach(function(audition) {
@@ -28,7 +29,8 @@ module.exports = function(router, app) {
         auditionsView.push({
           audition: audition,
           total_likes: totalLikes[audition.id],
-          total_comments: totalComments[audition.id]
+          total_comments: totalComments[audition.id],
+          liked: likedAuditions.has(audition.id)
         });
       });
       res.json(auditionsView);
@@ -77,11 +79,13 @@ module.exports = function(router, app) {
       this.result.total_auditions = result.total_auditions;
       return Promise.props({
         total_likes: contestService.totalLikes(result.auditions),
-        total_comments: contestService.totalComments(result.auditions)
+        total_comments: contestService.totalComments(result.auditions),
+        liked_auditions: contestService.listLikedVideos(req.user, result.auditions)
       });
     }).then(function(result) {
       this.result.total_likes = result.total_likes;
       this.result.total_comments = result.total_comments;
+      this.result.liked_auditions = Array.from(result.liked_auditions);
       res.json(this.result);
     }).catch(function(err) {
       logger.error(err);

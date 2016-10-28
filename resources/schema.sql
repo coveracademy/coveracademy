@@ -61,7 +61,6 @@ create table video (
 ) engine = innodb default charset = utf8;
 
 create table user_like (
-  id                int not null auto_increment,
   user_id           int not null,
   video_id          int not null,
   registration_date timestamp not null default current_timestamp,
