@@ -1,13 +1,10 @@
 create table user (
   id                int not null auto_increment,
-  name              varchar(100) not null,
+  first_name        varchar(255) not null,
+  last_name         varchar(255) not null,
   email             varchar(255) default null,
-  permission        enum('user', 'admin') default 'user',
-  gender            enum('male', 'female') default 'male',
-  biography         varchar(255) default null,
   username          varchar(255) default null,
-  city              varchar(255) default null,
-  state             varchar(255) default null,
+  biography         varchar(255) default null,
   facebook_account  varchar(255) not null,
   facebook_picture  varchar(255) default null,
   registration_date timestamp not null default current_timestamp,
@@ -48,7 +45,6 @@ create table video (
   user_id           int not null,
   contest_id        int not null,
   title             varchar(255) not null,
-  description       varchar(255) not null,
   slug              varchar(255) not null,
   url               varchar(255) not null,
   small_thumbnail   varchar(255) default null,
@@ -108,7 +104,7 @@ create table fan (
 
 create table prize (
   id         int not null auto_increment,
-  name       varchar(100) not null,
+  name       varchar(255) not null,
   place      tinyint not null,
   image      varchar(255) default null,
   contest_id int not null,

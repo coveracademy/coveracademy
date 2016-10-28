@@ -17,7 +17,7 @@ exports.configure = function(app) {
     var email = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
     var picture = profile.photos && profile.photos.length > 0 ? profile.photos[0].value : null;
     userService.getUserByFacebookAccount(profile.id).catch(messages.NotFoundError, function(err) {
-      return userService.create(profile.id, profile.displayName, email, picture);
+      return userService.createUser(profile.name.givenName, profile.name.familyName, email, profile.id, picture);
     }).then(function(user) {
       done(null, user);
     }).catch(function(err) {

@@ -6,6 +6,18 @@ var models        = require('../models'),
     NotFoundError = models.Bookshelf.NotFoundError,
     $             = this;
 
+exports.createUser = function(firstName, lastName, email, facebookAccount, facebookPicture) {
+  return Promise.resolve().then(function() {
+    var user = User.forge();
+    user.set('first_name', firstName);
+    user.set('last_name', lastName);
+    user.set('email', email);
+    user.set('facebook_account', facebookAccount);
+    user.set('facebook_picture', facebookPicture);
+    return user.save();
+  });
+};
+
 exports.getUser = function(id, require) {
   var options = {require: require === false ? false : true};
   return User.forge({id: id}).fetch(options).catch(NotFoundError, function(err) {

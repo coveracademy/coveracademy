@@ -65,10 +65,8 @@ exports.listAuditions = function(contest) {
       } else if(rankType === constants.RANK_BEST) {
         qb.leftJoin(UserLike.forge().tableName, function() {
           this.on('video.id', 'user_like.video_id');
-          this.andOn('user_like.valid', 1);
         });
         qb.groupBy('video.id');
-        qb.orderBy(Bookshelf.knex.raw('sum(user_like.voting_power)'), 'desc');
       }
     }).fetch(videoWithUserRelated).then(function(auditions) {
       if(rankType === constants.RANK_LATEST) {
