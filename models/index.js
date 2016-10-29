@@ -25,7 +25,10 @@ Bookshelf.plugin(require('bookshelf-filteration').plugin);
 var Comment = Bookshelf.Model.extend({
   idAttribute: 'id',
   tableName: 'comment',
-  hasTimestamps: ['registration_date']
+  hasTimestamps: ['registration_date'],
+  user: function() {
+    return this.belongsTo(User, 'user_id');
+  }
 });
 
 var Contest = Bookshelf.Model.extend({

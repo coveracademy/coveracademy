@@ -21,16 +21,16 @@ exports.getContest = function(id) {
 };
 
 exports.listRunningContests = function() {
-  return Contest.collection().query(function(qb) {
+  return Contest.query(function(qb) {
     var now = new Date();
     qb.where('start_date', '<', now);
     qb.where('end_date', '>', now);
     qb.orderBy('start_date', 'asc');
-  }).fetch();
+  }).fetchAll();
 };
 
 exports.listLatestContests = function(page, pageSize) {
-  return Contest.collection().query(function(qb) {
+  return Contest.query(function(qb) {
     qb.whereNotNull('start_date');
     qb.whereNotNull('end_date');
     qb.orderBy('start_date', 'desc');
@@ -38,7 +38,7 @@ exports.listLatestContests = function(page, pageSize) {
       qb.offset((page - 1) * pageSize);
       qb.limit(pageSize);
     }
-  }).fetch();
+  }).fetchAll();
 };
 
 exports.listRandomAuditions = function(contests, related) {
@@ -57,7 +57,7 @@ exports.listAuditions = function(contest) {
     } else {
       rankType = constants.RANK_RANDOM;
     }
-    return Video.collection().query(function(qb) {
+    return Video.query(function(qb) {
       qb.where('contest_id', contest.id);
       if(rankType === constants.RANK_LATEST) {
         qb.orderBy('registration_date', 'desc');
@@ -67,7 +67,7 @@ exports.listAuditions = function(contest) {
         });
         qb.groupBy('video.id');
       }
-    }).fetch(videoWithUserRelated).then(function(videos) {
+    }).fetchAll(videoWithUserRelated).then(function(videos) {
       if(rankType === constants.RANK_LATEST) {
         return Video.collection(videos.shuffle());
       } else {

@@ -7,7 +7,9 @@ var userService     = require('../apis/userService'),
     constants       = require('../apis/internals/constants'),
     logger          = require('../configs/logger'),
     isAuthenticated = require('../utils/authorization').isAuthenticated,
-    Promise         = require('bluebird');
+    models          = require('../models'),
+    Promise         = require('bluebird'),
+    Video           = models.Video;
 
 module.exports = function(router, app) {
 
@@ -64,8 +66,8 @@ module.exports = function(router, app) {
     });
   });
 
-  router.get('/contests/:id', isAuthenticated, function(req, res, next) {
-    var id = req.params.id;
+  router.get('/contests/:contest_id', isAuthenticated, function(req, res, next) {
+    var id = req.params.contest_id;
     contestService.getContest(id).bind({}).then(function(contest) {
       this.result = {};
       this.result.contest = contest;
@@ -94,18 +96,27 @@ module.exports = function(router, app) {
     });
   });
 
-  router.get('/users/:id', function(req, res, next) {
-    var userId = req.params.id;
-    userService.findById(userId).then(function(user) {
+  router.get('/users/:user_id', isAuthenticated, function(req, res, next) {
+    userService.getUser(req.params.user_id).then(function(user) {
       return Promise.props({
         fan: userService.isFan(req.user, user) === true ? 1 : 0,
-        fans: userService.latestFans(user, constants.FIRST_PAGE, constants.NUMBER_OF_FANS_IN_PAGE),
         total_fans: userService.totalFans(user),
-        videos: videoService.listUserAuditions(user)
+        videos: videoService.listUserVideos(user),
+        auditions: videoService.listUserAuditions(user)
       }).then(function(result) {
         result.user = user;
         res.json(result);
       });
+    }).catch(function(err) {
+      logger.error(err);
+      messages.respondWithError(err, res);
+    });
+  });
+
+  router.get('/videos/:video_id/comments', function(req, res, next) {
+    var video = Video.forge({id: req.params.video_id});
+    videoService.listComments(video, constants.FIRST_PAGE, constants.COMMENTS_PER_PAGE).then(function(comments) {
+      res.json(comments);
     }).catch(function(err) {
       logger.error(err);
       messages.respondWithError(err, res);

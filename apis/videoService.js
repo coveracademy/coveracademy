@@ -11,6 +11,8 @@ var models        = require('../models'),
     Video         = models.Video,
     $             = this;
 
+var commentWithUserRelated = {withRelated: ['user']};
+
 exports.getVideo = function(id, related) {
   return Video.forge({id: id}).fetch({withRelated: related});
 };
@@ -26,6 +28,17 @@ exports.listLikedVideos = function(user, videos) {
     });
     return videosIds;
   });
+};
+
+exports.listComments = function(video, page, pageSize) {
+  return Comment.query(function(qb) {
+    qb.where('video_id', video.id);
+    qb.orderBy('registration_date', 'asc');
+    if(page && pageSize) {
+      qb.offset((page - 1) * pageSize);
+      qb.limit(pageSize);
+    }
+  }).fetchAll(commentWithUserRelated);
 };
 
 exports.totalLikes = function(videos) {
@@ -88,7 +101,6 @@ exports.dislike = function(user, video) {
     if(video.get('contest_id') && video.related('contest').get('progress') !== constants.CONTEST_RUNNING) {
       throw messages.apiError('video.like.contestNotRunning', 'Contest is not running');
     }
-    var like = UserLike.forge({user_id: user.id, video_id: video.id});
-    return like.delete();
+    return UserLike.where({user_id: user.id, video_id: video.id}).destroy();
   });
 };
