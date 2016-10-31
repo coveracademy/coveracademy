@@ -28,16 +28,16 @@ create table contest (
   unique key `uq_contest_slug` (`slug`)
 ) engine = innodb default charset = utf8;
 
-create table contest_winner (
+create table winner (
   contest_id int not null,
   user_id    int not null,
   place      tinyint not null,
-  unique key `uq_contest_winner_contest_id_user_id` (`contest_id`, `user_id`),
-  unique key `uq_contest_winner_contest_id_place` (`contest_id`, `place`),
-  key `fk_contest_winner_contest_id` (`contest_id`),
-  key `fk_contest_winner_user_id` (`user_id`),
-  constraint `fk_contest_winner_contest_id` foreign key (`contest_id`) references `contest` (`id`),
-  constraint `fk_contest_winner_user_id` foreign key (`user_id`) references `user` (`id`)
+  unique key `uq_winner_contest_id_user_id` (`contest_id`, `user_id`),
+  unique key `uq_winner_contest_id_place` (`contest_id`, `place`),
+  key `fk_winner_contest_id` (`contest_id`),
+  key `fk_winner_user_id` (`user_id`),
+  constraint `fk_winner_contest_id` foreign key (`contest_id`) references `contest` (`id`),
+  constraint `fk_winner_user_id` foreign key (`user_id`) references `user` (`id`)
 ) engine = innodb default charset = utf8;
 
 create table video (
@@ -65,8 +65,7 @@ create table user_like (
   user_id           int not null,
   video_id          int not null,
   registration_date timestamp not null default current_timestamp,
-  primary key (id),
-  unique key `uq_user_like_user_id_video_id` (`user_id`, `video_id`),
+  primary key (user_id, video_id),
   key `fk_user_like_user_id` (`user_id`),
   key `fk_user_like_video_id` (`video_id`),
   constraint `fk_user_like_user_id` foreign key (`user_id`) references `user` (`id`),
@@ -79,7 +78,7 @@ create table comment (
   video_id          int not null,
   comment_id        int default null,
   message           text not null,
-  registration_date timestamp not null default current_timestamp,
+  send_date  timestamp not null default current_timestamp,
   primary key (id),
   key `fk_comment_user_id` (`user_id`),
   key `fk_comment_video_id` (`video_id`),

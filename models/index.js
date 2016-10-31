@@ -25,7 +25,7 @@ Bookshelf.plugin(require('bookshelf-filteration').plugin);
 var Comment = Bookshelf.Model.extend({
   idAttribute: 'id',
   tableName: 'comment',
-  hasTimestamps: ['registration_date'],
+  hasTimestamps: ['send_date'],
   user: function() {
     return this.belongsTo(User, 'user_id');
   }
@@ -51,17 +51,15 @@ var Contest = Bookshelf.Model.extend({
   }
 });
 
-var ContestWinner = Bookshelf.Model.extend({
-  idAttribute: 'id',
-  tableName: 'contest_winner',
-  user: function() {
-    return this.belongsTo(User, 'user_id');
-  }
-});
-
 var Fan = Bookshelf.Model.extend({
   idAttribute: 'id',
   tableName: 'fan',
+  hasTimestamps: ['registration_date']
+});
+
+var Like = Bookshelf.Model.extend({
+  idAttribute: 'id',
+  tableName: 'user_like',
   hasTimestamps: ['registration_date']
 });
 
@@ -73,12 +71,6 @@ var Prize = Bookshelf.Model.extend({
 var User = Bookshelf.Model.extend({
   idAttribute: 'id',
   tableName: 'user',
-  hasTimestamps: ['registration_date']
-});
-
-var UserLike = Bookshelf.Model.extend({
-  idAttribute: 'id',
-  tableName: 'user_like',
   hasTimestamps: ['registration_date']
 });
 
@@ -94,14 +86,22 @@ var Video = Bookshelf.Model.extend({
   }
 });
 
+var Winner = Bookshelf.Model.extend({
+  idAttribute: 'id',
+  tableName: 'winner',
+  user: function() {
+    return this.belongsTo(User, 'user_id');
+  }
+});
+
 module.exports = {
   Bookshelf: Bookshelf,
   Comment: Comment,
   Contest: Contest,
-  ContestWinner: ContestWinner,
   Fan: Fan,
+  Like: Like,
   Prize: Prize,
   User: User,
-  UserLike: UserLike,
-  Video: Video
+  Video: Video,
+  Winner: Winner
 }

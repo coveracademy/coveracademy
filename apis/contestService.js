@@ -1,17 +1,17 @@
 'use strict';
 
-var models        = require('../models'),
-    messages      = require('./internals/messages'),
-    constants     = require('./internals/constants'),
-    Promise       = require('bluebird'),
-    _             = require('lodash'),
-    Bookshelf     = models.Bookshelf,
-    Contest       = models.Contest,
-    ContestWinner = models.ContestWinner,
-    User          = models.User,
-    UserLike      = models.UserLike,
-    Video         = models.Video,
-    $             = this;
+var models    = require('../models'),
+    messages  = require('./internals/messages'),
+    constants = require('./internals/constants'),
+    Promise   = require('bluebird'),
+    _         = require('lodash'),
+    Bookshelf = models.Bookshelf,
+    Contest   = models.Contest,
+    Winner    = models.Winner,
+    User      = models.User,
+    Like      = models.Like,
+    Video     = models.Video,
+    $         = this;
 
 var contestWinnerWithUserRelated = {withRelated: ['user']};
 var videoWithUserRelated = {withRelated: ['user']};
@@ -62,7 +62,7 @@ exports.listAuditions = function(contest) {
       if(rankType === constants.RANK_LATEST) {
         qb.orderBy('registration_date', 'desc');
       } else if(rankType === constants.RANK_BEST) {
-        qb.leftJoin(UserLike.forge().tableName, function() {
+        qb.leftJoin(Like.forge().tableName, function() {
           this.on('video.id', 'user_like.video_id');
         });
         qb.groupBy('video.id');
@@ -78,7 +78,7 @@ exports.listAuditions = function(contest) {
 };
 
 exports.listWinnersInContests = function(contests) {
-  return ContestWinner.query(function(qb) {
+  return Winner.query(function(qb) {
     qb.whereIn('contest_id', contests.pluck('id'));
     qb.orderBy('contest_id', 'asc');
     qb.orderBy('place', 'asc');
