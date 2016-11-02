@@ -66,6 +66,15 @@ module.exports = function(router, app) {
     });
   });
 
+  router.get('/contests/join', isAuthenticated, function(req, res, next) {
+    contestService.listAvailableContests().then(function(contests) {
+      res.json(contests);
+    }).catch(function(err) {
+      logger.error(err);
+      messages.respondWithError(err, res);
+    });
+  });
+
   router.get('/contests/:contest_id', isAuthenticated, function(req, res, next) {
     var id = req.params.contest_id;
     contestService.getContest(id).bind({}).then(function(contest) {
@@ -113,7 +122,7 @@ module.exports = function(router, app) {
     });
   });
 
-  router.get('/videos/:video_id/comments', function(req, res, next) {
+  router.get('/videos/:video_id/comments', isAuthenticated, function(req, res, next) {
     var video = Video.forge({id: req.params.video_id});
     videoService.listComments(video, constants.FIRST_PAGE, constants.COMMENTS_PER_PAGE).then(function(comments) {
       res.json(comments);

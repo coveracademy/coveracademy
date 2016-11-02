@@ -29,6 +29,20 @@ exports.listRunningContests = function() {
   }).fetchAll();
 };
 
+exports.listAvailableContests = function() {
+  return Contest.query(function(qb) {
+    var now = new Date();
+    qb.whereNull('start_date');
+    qb.orWhereNull('end_date');
+    qb.orWhere('start_date', '>', now);
+    qb.orWhere(function() {
+      this.where('start_date', '<', now);
+      this.where('end_date', '>', now);
+    });
+    qb.orderBy('start_date', 'asc');
+  }).fetchAll();
+};
+
 exports.listLatestContests = function(page, pageSize) {
   return Contest.query(function(qb) {
     qb.whereNotNull('start_date');
