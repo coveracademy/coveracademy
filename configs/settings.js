@@ -36,7 +36,15 @@ try {
         apiKey: 'key-335a52e99eb6d3aac9abc94e791a6738',
         host: properties.getValue('postman.host', 'localhost'),
         port: properties.getValue('postman.port', 3200)
+      },
+      _videoUpload = {
+        directory: path.join(_publicPath, 'media/videos'),
+        encoding: 'utf-8',
+        extension: '.mp4'
       };
+
+  // Create media directories
+  mkdirp.sync(_videoUpload.directory);
 
   logger.info('Using %s environment settings', _nodeEnv);
   if(_debug === true) {
@@ -52,6 +60,7 @@ try {
   exports.postman = _postman;
   exports.publicPath = _publicPath;
   exports.redis = _redis;
+  exports.videoUpload = _videoUpload;
   exports.website = _website;
 } catch(err) {
   logger.error('Error loading settings', err);

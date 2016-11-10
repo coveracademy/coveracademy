@@ -2,7 +2,9 @@
 
 var videoService    = require('../apis/videoService'),
     messages        = require('../apis/internals/messages'),
+    settings        = require('../configs/settings'),
     logger          = require('../configs/logger'),
+    files           = require('../utils/files'),
     isAuthenticated = require('../utils/authorization').isAuthenticated,
     models          = require('../models'),
     Video           = models.Video;
@@ -36,6 +38,19 @@ module.exports = function(router, app) {
     var video = Video.forge({id: req.params.video_id});
     videoService.comment(req.user, video, req.body.message).then(function(comment) {
       res.json(comment);
+    }).catch(function(err) {
+      logger.error(err);
+      messages.respondWithError(err, res);
+    });
+  });
+
+  // Comments a video
+  router.post('/uploads', isAuthenticated, function(req, res, next) {
+    files.parseFiles(req, settings.videoUpload).then(function(formParsed) {
+      var video = Video.forge(formParsed.fields);
+      return videoService.saveVideo(video);
+    }).then(function(video) {
+      res.json(video);
     }).catch(function(err) {
       logger.error(err);
       messages.respondWithError(err, res);

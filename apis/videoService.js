@@ -17,6 +17,10 @@ exports.getVideo = function(id, related) {
   return Video.forge({id: id}).fetch({withRelated: related});
 };
 
+exports.saveVideo = function(video) {
+  return video.save();
+};
+
 exports.listLikedVideos = function(user, videos) {
   return Like.query(function(qb) {
     qb.where('user_id', user.id);
