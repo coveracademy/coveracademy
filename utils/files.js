@@ -17,9 +17,6 @@ var s3 = new aws.S3(settings.aws.credentials);
 const AUDIO_CODEC = 'aac';
 const VIDEO_CODEC = 'libx264';
 const VIDEO_EXTENSION = 'mp4';
-const VIDEO_RESOLUTION_WIDTH = 600;
-const VIDEO_RESOLUTION_HEIGHT = 336;
-const VIDEO_RESOLUTION = VIDEO_RESOLUTION_WIDTH + 'x' + VIDEO_RESOLUTION_HEIGHT;
 const SCREENSHOT_EXTENSION = 'png';
 
 var generateFilename = function(uploadConfig) {
@@ -107,8 +104,7 @@ exports.takeVideoScreenshot = function(filename, uploadConfig) {
         count: 1,
         timestamps: [0],
         filename: screenshotName,
-        folder: uploadConfig.directory,
-        size: VIDEO_RESOLUTION
+        folder: uploadConfig.directory
       });
   });
 };
