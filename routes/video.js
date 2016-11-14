@@ -7,6 +7,7 @@ var videoService    = require('../apis/videoService'),
     files           = require('../utils/files'),
     isAuthenticated = require('../utils/authorization').isAuthenticated,
     models          = require('../models'),
+    Contest         = models.Contest,
     Video           = models.Video;
 
 module.exports = function(router, app) {
@@ -44,13 +45,16 @@ module.exports = function(router, app) {
     });
   });
 
-  // Comments a video
+  // Uploads and saves a video
   router.post('/uploads', isAuthenticated, function(req, res, next) {
-    files.parseFiles(req, settings.videoUpload).then(function(formParsed) {
-      var video = Video.forge(formParsed.fields);
-      return videoService.saveVideo(video);
-    }).then(function(video) {
-      res.json(video);
+    files.parseFiles(req, settings.videoUpload).bind({}).then(function(formParsed) {
+      res.json();
+      var contest = formParsed.fields.contest ? Contest.forge({id: formParsed.fields.contest}) : null;
+      videoService.createVideo(req.user, formParsed.file, contest).then(function(video) {
+        logger.info('Video created with success');
+      }).catch(function(err) {
+        logger.error('Error creating video', err);
+      });
     }).catch(function(err) {
       logger.error(err);
       messages.respondWithError(err, res);

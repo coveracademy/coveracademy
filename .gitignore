@@ -3,4 +3,4 @@
 /coveracademy.log
 /config.properties
 node_modules
-services/emails/inline
+public

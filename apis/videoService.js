@@ -1,6 +1,8 @@
 'use strict';
 
 var models    = require('../models'),
+    settings  = require('../configs/settings'),
+    files     = require('../utils/files'),
     messages  = require('./internals/messages'),
     constants = require('./internals/constants'),
     Promise   = require('bluebird'),
@@ -17,8 +19,20 @@ exports.getVideo = function(id, related) {
   return Video.forge({id: id}).fetch({withRelated: related});
 };
 
-exports.saveVideo = function(video) {
-  return video.save();
+exports.createVideo = function(user, filename, contest) {
+  return files.convertVideo(filename, settings.videoUpload).bind({}).then(function(newFilename) {
+    this.newFilename = newFilename;
+    return files.takeVideoScreenshot(newFilename, settings.videoUpload);
+  }).then(function(screenshot) {
+    var video = Video.forge({
+      user_id: user.id,
+      contest_id: contest ? contest.id : null,
+      url: this.newFilename,
+      thumbnail: screenshot,
+      approved: 1
+    });
+    return video.save();
+  });
 };
 
 exports.listLikedVideos = function(user, videos) {

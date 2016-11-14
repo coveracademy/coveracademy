@@ -25,22 +25,31 @@ try {
         port: properties.getValue('redis.port', 6379),
         password: properties.getValue('redis.password')
       },
-      _authentication = {
-        facebook: {
-          clientID: '329761620528304',
-          clientSecret: '9331e1f0ee96c8ea7789a22e55aacdba'
-        }
-      },
       _postman = {
         contact: 'contact@coveracademy.com',
         apiKey: 'key-335a52e99eb6d3aac9abc94e791a6738',
         host: properties.getValue('postman.host', 'localhost'),
         port: properties.getValue('postman.port', 3200)
       },
+      _authentication = {
+        facebook: {
+          clientID: '329761620528304',
+          clientSecret: '9331e1f0ee96c8ea7789a22e55aacdba'
+        }
+      },
+      _aws = {
+        credentials: {
+          accessKeyId: properties.getValue('aws.key'),
+          secretAccessKey: properties.getValue('aws.secret'),
+          region: properties.getValue('aws.region')
+        },
+        buckets: {
+          videos: 'com.coveracademy.videos'
+        }
+      },
       _videoUpload = {
         directory: path.join(_publicPath, 'media/videos'),
-        encoding: 'utf-8',
-        extension: '.mp4'
+        encoding: 'utf-8'
       };
 
   // Create media directories
@@ -52,6 +61,7 @@ try {
   }
 
   exports.authentication = _authentication;
+  exports.aws = _aws;
   exports.database = _database;
   exports.debug = _debug;
   exports.domain = _domain;
