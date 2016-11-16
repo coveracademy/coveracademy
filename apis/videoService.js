@@ -104,8 +104,7 @@ exports.like = function(user, video) {
     if(video.get('approved') === 0) {
       throw messages.apiError('video.like.videoNotApproved', 'The user can not like a not approved video');
     }
-    var like = Like.forge({user_id: user.id, video_id: video.id});
-    return like.save();
+    return Like.forge({user_id: user.id, video_id: video.id}).save();
   }).catch(function(err) {
     if(messages.isDuplicatedEntryError(err)) {
       throw messages.apiError('video.like.alreadyLiked', 'Video already liked by user', err);

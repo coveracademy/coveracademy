@@ -69,12 +69,23 @@ create table user_like (
   constraint `fk_user_like_video_id` foreign key (`video_id`) references `video` (`id`)
 ) engine = innodb default charset = utf8;
 
-create table comment (
-  id                int not null auto_increment,
+create table fan (
   user_id           int not null,
-  video_id          int not null,
-  comment_id        int default null,
-  message           text not null,
+  related_id        int not null,
+  registration_date timestamp not null default current_timestamp,
+  primary key (user_id, related_id),
+  key `fk_fan_user_id` (`user_id`),
+  key `fk_fan_related_id` (`related_id`),
+  constraint `fk_fan_user_id` foreign key (`user_id`) references `user` (`id`),
+  constraint `fk_fan_related_id` foreign key (`related_id`) references `user` (`id`)
+) engine = innodb default charset = utf8;
+
+create table comment (
+  id         int not null auto_increment,
+  user_id    int not null,
+  video_id   int not null,
+  comment_id int default null,
+  message    text not null,
   send_date  timestamp not null default current_timestamp,
   primary key (id),
   key `fk_comment_user_id` (`user_id`),
@@ -85,25 +96,12 @@ create table comment (
   constraint `fk_comment_comment_id` foreign key (`comment_id`) references `comment` (`id`)
 ) engine = innodb default charset = utf8;
 
-create table fan (
-  id                int not null auto_increment,
-  user_id           int not null,
-  related_id        int not null,
-  registration_date timestamp not null default current_timestamp,
-  primary key (id),
-  unique key `uq_fan_user_id_related_id` (`user_id`, `related_id`),
-  key `fk_fan_user_id` (`user_id`),
-  key `fk_fan_related_id` (`related_id`),
-  constraint `fk_fan_user_id` foreign key (`user_id`) references `user` (`id`),
-  constraint `fk_fan_related_id` foreign key (`related_id`) references `user` (`id`)
-) engine = innodb default charset = utf8;
-
 create table prize (
   id         int not null auto_increment,
-  name       varchar(255) not null,
-  place      tinyint not null,
-  image      varchar(255) default null,
   contest_id int not null,
+  name       varchar(255) not null,
+  image      varchar(255) default null,
+  place      tinyint not null,
   primary key (id),
   key `fk_prize_contest_id` (`contest_id`),
   constraint `fk_prize_contest_id` foreign key (`contest_id`) references `contest` (`id`)

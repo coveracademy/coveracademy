@@ -2,7 +2,9 @@
 
 var models        = require('../models'),
     messages      = require('./internals/messages'),
+    Promise       = require('bluebird'),
     User          = models.User,
+    Fan           = models.Fan,
     NotFoundError = models.Bookshelf.NotFoundError,
     $             = this;
 
@@ -34,4 +36,36 @@ exports.getUserByFacebookAccount = function(facebookAccount, require) {
 
 exports.listUsers = function(ids) {
   return User.query('whereIn', 'id', ids).fetchAll();
+};
+
+exports.fan = function(user, related) {
+  return Promise.resolve().bind({}).then(function() {
+    if(user.id === related.id) {
+      throw messages.apiError('user.fan.canNotFanYourself', 'You can not fan yourself');
+    }
+    return Fan.forge({user_id: user.id, related_id: related.id}).save();
+  }).catch(function(err) {
+    if(messages.isDuplicatedEntryError(err)) {
+      throw messages.apiError('user.fan.alreadyFan', 'User is already a fan', err);
+    } else {
+      throw err;
+    }
+  });
+};
+
+exports.unfan = function(user, related) {
+  return Fan.where({user_id: user.id, related_id: related.id}).destroy();
+};
+
+exports.listIdols = function(user, videos) {
+  return Fan.query(function(qb) {
+    qb.where('user_id', user.id);
+    qb.whereIn('related_id', videos.pluck('user_id'));
+  }).fetchAll().then(function(fans) {
+    var usersIds = new Set();
+    fans.forEach(function(fan) {
+      usersIds.add(fan.get('related_id'));
+    });
+    return usersIds;
+  });
 };

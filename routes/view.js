@@ -22,9 +22,10 @@ module.exports = function(router, app) {
       return Promise.all([
         videoService.totalLikes(videos),
         videoService.totalComments(videos),
-        videoService.listLikedVideos(req.user, videos)
+        videoService.listLikedVideos(req.user, videos),
+        userService.listIdols(req.user, videos)
       ]);
-    }).spread(function(totalLikes, totalComments, likedVideos) {
+    }).spread(function(totalLikes, totalComments, likedVideos, idols) {
       var videosView = [];
       var context = this;
       this.videos.forEach(function(video) {
@@ -33,7 +34,8 @@ module.exports = function(router, app) {
           video: video,
           total_likes: totalLikes[video.id],
           total_comments: totalComments[video.id],
-          liked: likedVideos.has(video.id)
+          liked: likedVideos.has(video.id),
+          fan: idols.has(video.get('user_id'))
         });
       });
       res.json(videosView);
@@ -92,12 +94,14 @@ module.exports = function(router, app) {
       return Promise.props({
         total_likes: videoService.totalLikes(result.videos),
         total_comments: videoService.totalComments(result.videos),
-        liked_videos: videoService.listLikedVideos(req.user, result.videos)
+        liked_videos: videoService.listLikedVideos(req.user, result.videos),
+        idols: userService.listIdols(req.user, result.videos)
       });
     }).then(function(result) {
       this.result.total_likes = result.total_likes;
       this.result.total_comments = result.total_comments;
       this.result.liked_videos = Array.from(result.liked_videos);
+      this.result.idols = Array.from(result.idols);
       res.json(this.result);
     }).catch(function(err) {
       logger.error(err);

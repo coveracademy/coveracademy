@@ -67,7 +67,7 @@ exports.convertVideo = function(filename, uploadConfig) {
       .input(path.join(uploadConfig.directory, filename))
       .fps(29.96)
       .duration(30)
-      .aspect('16:9')
+      .size('1280x720')
       .autopad('white')
       .videoBitrate(3500)
       .videoCodec(VIDEO_CODEC)
