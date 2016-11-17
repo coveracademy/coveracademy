@@ -35,6 +35,10 @@ exports.createVideo = function(user, filename, contest) {
   });
 };
 
+exports.listVideos = function(user) {
+  return Video.where('user_id', user.id).orderBy('registration_date', 'desc').fetchAll();
+};
+
 exports.listLikedVideos = function(user, videos) {
   return Like.query(function(qb) {
     qb.where('user_id', user.id);
@@ -94,6 +98,10 @@ exports.totalComments = function(videos) {
     });
     return commentsByVideo;
   });
+};
+
+exports.totalVideos = function(user) {
+  return Video.where('user_id', user.id).where('approved', 1).count();
 };
 
 exports.like = function(user, video) {

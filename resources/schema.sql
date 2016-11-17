@@ -1,10 +1,10 @@
 create table user (
   id                int not null auto_increment,
-  first_name        varchar(255) not null,
-  last_name         varchar(255) not null,
+  first_name        varchar(20) not null,
+  last_name         varchar(20) not null,
   email             varchar(255) default null,
-  username          varchar(255) default null,
-  biography         varchar(255) default null,
+  username          varchar(20) default null,
+  biography         varchar(140) default null,
   facebook_account  varchar(255) not null,
   facebook_picture  varchar(255) default null,
   registration_date timestamp not null default current_timestamp,
@@ -16,10 +16,9 @@ create table user (
 
 create table contest (
   id                  int not null auto_increment,
-  name                varchar(255) not null,
-  description         varchar(255) default null,
+  name                varchar(50) not null,
+  description         varchar(140) default null,
   image               varchar(255) default null,
-  slug                varchar(255) not null,
   start_date          timestamp null default null,
   end_date            timestamp null default null,
   registration_date   timestamp not null default current_timestamp,

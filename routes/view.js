@@ -69,8 +69,13 @@ module.exports = function(router, app) {
   });
 
   router.get('/contests/join', isAuthenticated, function(req, res, next) {
-    contestService.listAvailableContests().then(function(contests) {
-      res.json(contests);
+    contestService.listAvailableContests().bind({}).then(function(contests) {
+      return contestService.isContestant(contests);
+    }).then(function(contestants) {
+      res.json({
+        contests: this.contests,
+        contestants: contestants
+      });
     }).catch(function(err) {
       logger.error(err);
       messages.respondWithError(err, res);
@@ -112,12 +117,13 @@ module.exports = function(router, app) {
   router.get('/users/:user_id', isAuthenticated, function(req, res, next) {
     userService.getUser(req.params.user_id).then(function(user) {
       return Promise.props({
-        fan: userService.isFan(req.user, user) === true ? 1 : 0,
+        user: user,
+        fan: userService.isFan(req.user, user) ? 1 : 0,
+        videos: videoService.listVideos(user),
+        total_videos: videoService.totalVideos(user),
         total_fans: userService.totalFans(user),
-        videos: videoService.listUserVideos(user),
-        auditions: videoService.listUserAuditions(user)
+        total_idols: userService.totalIdols(user)
       }).then(function(result) {
-        result.user = user;
         res.json(result);
       });
     }).catch(function(err) {

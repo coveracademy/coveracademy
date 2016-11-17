@@ -3,9 +3,9 @@
 var models        = require('../models'),
     messages      = require('./internals/messages'),
     Promise       = require('bluebird'),
+    Bookshelf     = models.Bookshelf,
     User          = models.User,
     Fan           = models.Fan,
-    NotFoundError = models.Bookshelf.NotFoundError,
     $             = this;
 
 exports.createUser = function(firstName, lastName, email, facebookAccount, facebookPicture) {
@@ -22,14 +22,14 @@ exports.createUser = function(firstName, lastName, email, facebookAccount, faceb
 
 exports.getUser = function(id, require) {
   var options = {require: require === false ? false : true};
-  return User.forge({id: id}).fetch(options).catch(NotFoundError, function(err) {
+  return User.forge({id: id}).fetch(options).catch(Bookshelf.NotFoundError, function(err) {
     throw messages.notFoundError('user.doesNotExist', 'User does not exist', err);
   });
 };
 
 exports.getUserByFacebookAccount = function(facebookAccount, require) {
   var options = {require: require === false ? false : true};
-  return User.forge({facebook_account: facebookAccount}).fetch(options).catch(NotFoundError, function(err) {
+  return User.forge({facebook_account: facebookAccount}).fetch(options).catch(Bookshelf.NotFoundError, function(err) {
     throw messages.notFoundError('user.doesNotExist', 'User does not exists', err);
   });
 };
@@ -55,6 +55,33 @@ exports.fan = function(user, related) {
 
 exports.unfan = function(user, related) {
   return Fan.where({user_id: user.id, related_id: related.id}).destroy();
+};
+
+exports.isFan = function(user, related) {
+  return Fan.where({user_id: user.id, related_id: related.id}).fetch().then(function(fan) {
+    return fan !== null;
+  });
+};
+
+exports.totalFans = function(user) {
+  return Fan.where('related_id', user.id).count();
+};
+
+exports.totalIdols = function(user) {
+  return Fan.where('user_id', user.id).count();
+};
+
+exports.listIdols = function(user, videos) {
+  return Fan.query(function(qb) {
+    qb.where('user_id', user.id);
+    qb.whereIn('related_id', videos.pluck('user_id'));
+  }).fetchAll().then(function(fans) {
+    var usersIds = new Set();
+    fans.forEach(function(fan) {
+      usersIds.add(fan.get('related_id'));
+    });
+    return usersIds;
+  });
 };
 
 exports.listIdols = function(user, videos) {
