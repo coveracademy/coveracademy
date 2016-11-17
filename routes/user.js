@@ -38,7 +38,7 @@ module.exports = function(router, app) {
   // Turns a fan of user
   router.post('/:user_id/fans', isAuthenticated, function(req, res, next) {
     var user = User.forge({id: req.params.user_id});
-    userService.fan(req.user, user).then(function() {
+    userService.becomeFan(req.user, user).then(function() {
       res.json();
     }).catch(function(err) {
       logger.error(err);
@@ -49,7 +49,7 @@ module.exports = function(router, app) {
   // Unfan a user
   router.delete('/:user_id/fans', isAuthenticated, function(req, res, next) {
     var user = User.forge({id: req.params.user_id});
-    userService.unfan(req.user, user).then(function() {
+    userService.removeFan(req.user, user).then(function() {
       res.json();
     }).catch(function(err) {
       logger.error(err);

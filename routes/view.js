@@ -118,7 +118,7 @@ module.exports = function(router, app) {
     userService.getUser(req.params.user_id).then(function(user) {
       return Promise.props({
         user: user,
-        fan: userService.isFan(req.user, user) ? 1 : 0,
+        fan: userService.isFan(req.user, user) === true ? 1 : 0,
         videos: videoService.listVideos(user),
         total_videos: videoService.totalVideos(user),
         total_fans: userService.totalFans(user),

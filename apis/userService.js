@@ -38,22 +38,22 @@ exports.listUsers = function(ids) {
   return User.query('whereIn', 'id', ids).fetchAll();
 };
 
-exports.fan = function(user, related) {
+exports.becomeFan = function(user, related) {
   return Promise.resolve().bind({}).then(function() {
     if(user.id === related.id) {
-      throw messages.apiError('user.fan.canNotFanYourself', 'You can not fan yourself');
+      throw messages.apiError('user.becomeFan.canNotFanYourself', 'You can not fan yourself');
     }
     return Fan.forge({user_id: user.id, related_id: related.id}).save();
   }).catch(function(err) {
     if(messages.isDuplicatedEntryError(err)) {
-      throw messages.apiError('user.fan.alreadyFan', 'User is already a fan', err);
+      throw messages.apiError('user.becomeFan.alreadyFan', 'User is already a fan', err);
     } else {
       throw err;
     }
   });
 };
 
-exports.unfan = function(user, related) {
+exports.removeFan = function(user, related) {
   return Fan.where({user_id: user.id, related_id: related.id}).destroy();
 };
 
