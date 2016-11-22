@@ -68,14 +68,9 @@ module.exports = function(router, app) {
     });
   });
 
-  router.get('/contests/join', isAuthenticated, function(req, res, next) {
-    contestService.listAvailableContests().bind({}).then(function(contests) {
-      return contestService.isContestant(contests);
-    }).then(function(contestants) {
-      res.json({
-        contests: this.contests,
-        contestants: contestants
-      });
+  router.get('/contests/enter', isAuthenticated, function(req, res, next) {
+    contestService.listAvailableContestsToUser(req.user).bind({}).then(function(contests) {
+      res.json(contests);
     }).catch(function(err) {
       logger.error(err);
       messages.respondWithError(err, res);
@@ -85,17 +80,14 @@ module.exports = function(router, app) {
   router.get('/contests/:contest_id', isAuthenticated, function(req, res, next) {
     var id = req.params.contest_id;
     contestService.getContest(id).bind({}).then(function(contest) {
-      this.result = {};
-      this.result.contest = contest;
       return Promise.props({
+        contest: contest,
         winners: contestService.listWinners(contest),
         videos: contestService.listAuditions(contest),
         total_videos: contestService.totalAuditions(contest)
       });
     }).then(function(result) {
-      this.result.winners = result.winners;
-      this.result.videos = result.videos;
-      this.result.total_videos = result.total_videos;
+      this.result = result;
       return Promise.props({
         total_likes: videoService.totalLikes(result.videos),
         total_comments: videoService.totalComments(result.videos),
@@ -115,17 +107,27 @@ module.exports = function(router, app) {
   });
 
   router.get('/users/:user_id', isAuthenticated, function(req, res, next) {
-    userService.getUser(req.params.user_id).then(function(user) {
+    userService.getUser(req.params.user_id).bind({}).then(function(user) {
       return Promise.props({
         user: user,
-        fan: userService.isFan(req.user, user) === true ? 1 : 0,
-        videos: videoService.listVideos(user),
+        fan: userService.isFan(req.user, user),
+        videos: videoService.listVideos(user, ['contest']),
         total_videos: videoService.totalVideos(user),
         total_fans: userService.totalFans(user),
         total_idols: userService.totalIdols(user)
-      }).then(function(result) {
-        res.json(result);
       });
+    }).then(function(result) {
+      this.result = result;
+      return Promise.props({
+        total_likes: videoService.totalLikes(result.videos),
+        total_comments: videoService.totalComments(result.videos),
+        liked_videos: videoService.listLikedVideos(req.user, result.videos)
+      });
+    }).then(function(result) {
+      this.result.total_likes = result.total_likes;
+      this.result.total_comments = result.total_comments;
+      this.result.liked_videos = Array.from(result.liked_videos);
+      res.json(this.result);
     }).catch(function(err) {
       logger.error(err);
       messages.respondWithError(err, res);

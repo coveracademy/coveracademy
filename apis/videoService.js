@@ -35,8 +35,8 @@ exports.createVideo = function(user, filename, contest) {
   });
 };
 
-exports.listVideos = function(user) {
-  return Video.where('user_id', user.id).orderBy('registration_date', 'desc').fetchAll();
+exports.listVideos = function(user, related) {
+  return Video.where('user_id', user.id).orderBy('registration_date', 'desc').fetchAll({withRelated: related});
 };
 
 exports.listLikedVideos = function(user, videos) {
@@ -113,9 +113,11 @@ exports.like = function(user, video) {
       throw messages.apiError('video.like.videoNotApproved', 'The user can not like a not approved video');
     }
     return Like.forge({user_id: user.id, video_id: video.id}).save();
+  }).then(function(like) {
+    return;
   }).catch(function(err) {
     if(messages.isDuplicatedEntryError(err)) {
-      throw messages.apiError('video.like.alreadyLiked', 'Video already liked by user', err);
+      return;
     } else {
       throw err;
     }

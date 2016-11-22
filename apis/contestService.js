@@ -43,6 +43,20 @@ exports.listAvailableContests = function() {
   }).fetchAll();
 };
 
+exports.listAvailableContestsToUser = function(user) {
+  return $.listAvailableContests().then(function(contests) {
+    return Video.query(function(qb) {
+      qb.where('user_id', user.id);
+      qb.whereIn('contest_id', contests.pluck('id'));
+    }).fetchAll().then(function(videos) {
+      videos.forEach(function(video) {
+        contests.remove(contests.get(video.get('contest_id')));
+      });
+      return contests;
+    });
+  });
+};
+
 exports.listLatestContests = function(page, pageSize) {
   return Contest.query(function(qb) {
     qb.whereNotNull('start_date');

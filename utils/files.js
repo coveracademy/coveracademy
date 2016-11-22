@@ -68,7 +68,7 @@ exports.convertVideo = function(filename, uploadConfig) {
       .fps(29.96)
       .duration(30)
       .size('1280x720')
-      .autopad('white')
+      .autopad('black')
       .videoBitrate(3500)
       .videoCodec(VIDEO_CODEC)
       .audioCodec(AUDIO_CODEC)
