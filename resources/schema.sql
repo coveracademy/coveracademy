@@ -57,15 +57,15 @@ create table video (
   constraint `fk_video_contest_id` foreign key (`contest_id`) references `contest` (`id`)
 ) engine = innodb default charset = utf8;
 
-create table user_like (
+create table ulike (
   user_id           int not null,
   video_id          int not null,
   registration_date timestamp not null default current_timestamp,
   primary key (user_id, video_id),
-  key `fk_user_like_user_id` (`user_id`),
-  key `fk_user_like_video_id` (`video_id`),
-  constraint `fk_user_like_user_id` foreign key (`user_id`) references `user` (`id`),
-  constraint `fk_user_like_video_id` foreign key (`video_id`) references `video` (`id`)
+  key `fk_ulike_user_id` (`user_id`),
+  key `fk_ulike_video_id` (`video_id`),
+  constraint `fk_ulike_user_id` foreign key (`user_id`) references `user` (`id`),
+  constraint `fk_ulike_video_id` foreign key (`video_id`) references `video` (`id`)
 ) engine = innodb default charset = utf8;
 
 create table fan (
@@ -104,4 +104,13 @@ create table prize (
   primary key (id),
   key `fk_prize_contest_id` (`contest_id`),
   constraint `fk_prize_contest_id` foreign key (`contest_id`) references `contest` (`id`)
+) engine = innodb default charset = utf8;
+
+create table task (
+  id                int not null auto_increment,
+  type              varchar(100) not null,
+  parameters        text not null,
+  start_date        timestamp not null,
+  registration_date timestamp not null default current_timestamp
+  primary key (id)
 ) engine = innodb default charset = utf8;

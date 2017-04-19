@@ -106,9 +106,6 @@ exports.totalVideos = function(user) {
 
 exports.like = function(user, video) {
   return $.getVideo(video.id, ['contest']).then(function(video) {
-    if(video.get('contest_id') && video.related('contest').get('progress') !== constants.CONTEST_RUNNING) {
-      throw messages.apiError('video.like.contestNotRunning', 'Contest is not running');
-    }
     if(video.get('approved') === 0) {
       throw messages.apiError('video.like.videoNotApproved', 'The user can not like a not approved video');
     }
@@ -126,23 +123,14 @@ exports.like = function(user, video) {
 
 exports.dislike = function(user, video) {
   return $.getVideo(video.id, ['contest']).then(function(video) {
-    if(video.get('contest_id') && video.related('contest').get('progress') !== constants.CONTEST_RUNNING) {
-      throw messages.apiError('video.like.contestNotRunning', 'Contest is not running');
-    }
     return Like.where({user_id: user.id, video_id: video.id}).destroy();
   });
 };
 
 exports.comment = function(user, video, message) {
   return Promise.resolve().bind({}).then(function() {
-    this.message = message;
-    if(message === '') {
+    if(_.isEmpty(message)) {
       throw messages.apiError('video.comment.empty', 'The message can not be empty');
-    }
-    return $.getVideo(video.id);
-  }).then(function(video) {
-    if(video.get('approved') === 0) {
-      throw messages.apiError('video.comment.videoNotApproved', 'The user can not comment a not approved video');
     }
     var comment = Comment.forge({user_id: user.id, video_id: video.id, message: message});
     return comment.save();

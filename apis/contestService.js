@@ -91,7 +91,7 @@ exports.listAuditions = function(contest) {
         qb.orderBy('registration_date', 'desc');
       } else if(rankType === constants.RANK_BEST) {
         qb.leftJoin(Like.forge().tableName, function() {
-          this.on('video.id', 'user_like.video_id');
+          this.on('video.id', 'ulike.video_id');
         });
         qb.groupBy('video.id');
       }

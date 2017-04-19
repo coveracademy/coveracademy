@@ -15,7 +15,6 @@ function APIError(status, key, message, cause) {
   this.key = key;
   this.message = message;
   this.cause = cause;
-
   this.json = function() {
     var json = {status: this.status, key: this.key, message: this.message};
     if(settings.debug === true && cause) {
@@ -33,14 +32,6 @@ function NotFoundError(key, message, cause) {
   NotFoundError.super_.call(this, 404, key, message, cause);
 }
 util.inherits(NotFoundError, APIError);
-
-function getErrorKey(err) {
-  if(err instanceof APIError) {
-    return err.key;
-  } else {
-    return 'internalError';
-  }
-}
 
 function isDuplicatedEntryError(err) {
   return err.code === 'ER_DUP_ENTRY';
@@ -105,7 +96,6 @@ function respondWithRedirection(toView, toParams, res) {
 }
 
 module.exports = {
-  getErrorKey: getErrorKey,
   isAPIError: isAPIError,
   isDuplicatedEntryError: isDuplicatedEntryError,
   apiError: apiError,

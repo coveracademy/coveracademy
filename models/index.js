@@ -59,13 +59,18 @@ var Fan = Bookshelf.Model.extend({
 
 var Like = Bookshelf.Model.extend({
   idAttribute: 'id',
-  tableName: 'user_like',
+  tableName: 'ulike',
   hasTimestamps: ['registration_date']
 });
 
 var Prize = Bookshelf.Model.extend({
   idAttribute: 'id',
   tableName: 'prize'
+});
+
+var Task = Bookshelf.Model.extend({
+  idAttribute: 'id',
+  tableName: 'task'
 });
 
 var User = Bookshelf.Model.extend({
@@ -101,6 +106,7 @@ module.exports = {
   Fan: Fan,
   Like: Like,
   Prize: Prize,
+  Task: Task,
   User: User,
   Video: Video,
   Winner: Winner
